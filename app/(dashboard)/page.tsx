@@ -99,7 +99,7 @@ export default async function DashboardPage() {
     },
     {
       title: "Ingresos Hoy",
-      value: `$${incomesToday.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`,
+      value: `$${incomesToday.toLocaleString("es-CL", { minimumFractionDigits: 0 })}`,
       icon: CreditCard,
       href: "/treatments",
       color: "text-emerald-600",
@@ -146,7 +146,7 @@ export default async function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-base">Cuentas por Cobrar</CardTitle>
             <span className="text-sm font-semibold text-red-600">
-              ${totalOutstanding.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+              ${totalOutstanding.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
             </span>
           </CardHeader>
           <CardContent>
@@ -165,7 +165,7 @@ export default async function DashboardPage() {
                       {p.firstName} {p.lastName}
                     </Link>
                     <span className="text-sm font-semibold text-red-600">
-                      ${p.debt.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                      ${p.debt.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                     </span>
                   </div>
                 ))}
@@ -198,10 +198,10 @@ export default async function DashboardPage() {
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-sm font-semibold text-green-600">
-                        +${Number(pay.amount).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                        +${Number(pay.amount).toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(pay.createdAt).toLocaleDateString("es-MX")}
+                        {new Date(pay.createdAt).toLocaleDateString("es-CL")}
                       </p>
                     </div>
                   </div>

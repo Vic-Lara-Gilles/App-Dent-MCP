@@ -37,7 +37,7 @@ const statusVariant: Record<string, "default" | "secondary" | "destructive" | "o
 
 function buildReminderMsg(appt: Appointment) {
   const d = new Date(appt.date);
-  return `Hola ${appt.patient.firstName}, le recordamos su cita "${appt.title}" el ${d.toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" })} a las ${d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}. Duración aprox. ${appt.duration} min. ¡Le esperamos!`;
+  return `Hola ${appt.patient.firstName}, le recordamos su cita "${appt.title}" el ${d.toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" })} a las ${d.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}. Duración aprox. ${appt.duration} min. ¡Le esperamos!`;
 }
 
 export default function AppointmentsPage() {
@@ -146,7 +146,7 @@ export default function AppointmentsPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="text-sm text-muted-foreground">
-                    {new Date(a.date).toLocaleString("es-MX", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · {a.duration} min
+                    {new Date(a.date).toLocaleString("es-CL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · {a.duration} min
                     {a.description && <p className="mt-1">{a.description}</p>}
                   </CardContent>
                 </Card>
@@ -179,7 +179,7 @@ export default function AppointmentsPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="text-sm text-muted-foreground">
-                    {new Date(a.date).toLocaleString("es-MX", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · {a.duration} min
+                    {new Date(a.date).toLocaleString("es-CL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · {a.duration} min
                   </CardContent>
                 </Card>
               ))}

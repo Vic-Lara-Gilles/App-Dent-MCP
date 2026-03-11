@@ -50,7 +50,7 @@ export function PaymentForm({ treatmentId, balance, onSuccess }: Props) {
 
     if (amount > balance) {
       toast.error(
-        `El monto excede el saldo pendiente ($${balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })})`
+        `El monto excede el saldo pendiente ($${balance.toLocaleString("es-CL", { minimumFractionDigits: 0 })})`
       );
       setLoading(false);
       return;
@@ -94,7 +94,7 @@ export function PaymentForm({ treatmentId, balance, onSuccess }: Props) {
         <p className="text-sm text-muted-foreground -mt-2">
           Saldo pendiente:{" "}
           <span className="font-semibold text-foreground">
-            ${balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+            ${balance.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
           </span>
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">

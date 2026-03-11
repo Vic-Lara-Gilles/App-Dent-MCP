@@ -43,7 +43,7 @@ export default async function AppointmentDetailPage({
   const apptDate = new Date(appt.date);
   const endDate = new Date(apptDate.getTime() + appt.duration * 60 * 1000);
 
-  const reminderMsg = `Hola ${appt.patient.firstName}, le recordamos su cita el ${apptDate.toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" })} a las ${apptDate.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}. Duración aprox. ${appt.duration} min. ¡Le esperamos!`;
+  const reminderMsg = `Hola ${appt.patient.firstName}, le recordamos su cita el ${apptDate.toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" })} a las ${apptDate.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}. Duración aprox. ${appt.duration} min. ¡Le esperamos!`;
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -68,7 +68,7 @@ export default async function AppointmentDetailPage({
           <div className="flex items-center gap-3">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span>
-              {apptDate.toLocaleDateString("es-MX", {
+              {apptDate.toLocaleDateString("es-CL", {
                 weekday: "long",
                 day: "numeric",
                 month: "long",
@@ -80,9 +80,9 @@ export default async function AppointmentDetailPage({
           <div className="flex items-center gap-3">
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span>
-              {apptDate.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}
+              {apptDate.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}
               {" — "}
-              {endDate.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}
+              {endDate.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}
             </span>
             <span className="text-sm text-muted-foreground">({appt.duration} min)</span>
           </div>
