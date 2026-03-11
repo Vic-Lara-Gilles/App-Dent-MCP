@@ -1,3 +1,4 @@
+import { AddPaymentDialog } from "@/components/treatments/AddPaymentDialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/db";
@@ -97,6 +98,11 @@ export default async function TreatmentsPage() {
                     }}
                   />
                 </div>
+                {t.status === "IN_PROGRESS" && t.balance > 0 && (
+                  <div className="mt-3 flex justify-end">
+                    <AddPaymentDialog treatmentId={t.id} balance={t.balance} />
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
