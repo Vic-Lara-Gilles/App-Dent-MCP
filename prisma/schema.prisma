@@ -30,16 +30,27 @@ model User {
 // ─── Pacientes ───────────────────────────────────────
 
 model Patient {
-  id           String        @id @default(cuid())
+  id           String         @id @default(cuid())
   firstName    String
   lastName     String
-  phone        String        @unique
+  phone        String         @unique
   email        String?
   notes        String?
+  avatarUrl    String?
+  photos       PatientPhoto[]
   treatments   Treatment[]
   appointments Appointment[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model PatientPhoto {
+  id        String   @id @default(cuid())
+  url       String
+  label     String?
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientId String
+  createdAt DateTime @default(now())
 }
 
 // ─── Dentistas ───────────────────────────────────────
