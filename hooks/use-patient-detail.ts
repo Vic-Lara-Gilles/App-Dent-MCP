@@ -12,21 +12,36 @@ export function usePatientDetail(id: string) {
   const router = useRouter();
   const [patient, setPatient] = useState<PatientDetail | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const fetchPatient = useCallback(async () => {
-    const res = await fetch(`/api/patients/${id}`);
-    if (!res.ok) {
-      toast.error("Paciente no encontrado");
-      router.push("/patients");
-      return;
-    }
-    setPatient(await res.json());
-    setLoading(false);
-  }, [id, router]);
+  const [revision, setRevision] = useState(0);
 
   useEffect(() => {
-    fetchPatient();
-  }, [fetchPatient]);
+    let cancelled = false;
+
+    fetch(`/api/patients/${id}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          if (!cancelled) {
+            toast.error("Paciente no encontrado");
+            router.push("/patients");
+          }
+          return;
+        }
+        const data: PatientDetail = await res.json();
+        if (!cancelled) {
+          setPatient(data);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) toast.error("Error al cargar paciente");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, router, revision]);
+
+  const refetch = useCallback(() => setRevision((r) => r + 1), []);
 
   const deletePatient = useCallback(async () => {
     if (!confirm("¿Eliminar este paciente y todos sus datos?")) return;
@@ -39,5 +54,6 @@ export function usePatientDetail(id: string) {
     }
   }, [id, router]);
 
-  return { patient, loading, refetch: fetchPatient, deletePatient };
+  return { patient, loading, refetch, deletePatient };
 }
+

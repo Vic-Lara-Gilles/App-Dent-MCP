@@ -20,6 +20,12 @@ export const createTreatmentSchema = z.object({
   patientId: z.string().min(1),
 });
 
+export const updateTreatmentSchema = z.object({
+  description: z.string().min(1).optional(),
+  totalAmount: z.coerce.number().positive().optional(),
+  status: z.enum(["IN_PROGRESS", "COMPLETED", "CANCELLED"]).optional(),
+});
+
 // ─── Payment ─────────────────────────────────────────
 
 export const createPaymentSchema = z.object({
