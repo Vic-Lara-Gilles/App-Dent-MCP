@@ -2,7 +2,9 @@
 
 import { AppointmentForm } from "@/components/appointments/AppointmentForm";
 import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
+import { PatientAvatar } from "@/components/patients/PatientAvatar";
 import { PatientForm } from "@/components/patients/PatientForm";
+import { PatientPhotos } from "@/components/patients/PatientPhotos";
 import { PaymentForm } from "@/components/treatments/PaymentForm";
 import { TreatmentForm } from "@/components/treatments/TreatmentForm";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +32,14 @@ export default function PatientDetailPage() {
           <Button variant="ghost" size="icon" className="shrink-0" onClick={() => router.push("/patients")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
+          <PatientAvatar
+            patientId={id}
+            firstName={patient.firstName}
+            lastName={patient.lastName}
+            avatarUrl={patient.avatarUrl}
+            onSuccess={refetch}
+            size="md"
+          />
           <div className="min-w-0">
             <h1 className="text-xl sm:text-2xl font-bold truncate">
               {patient.firstName} {patient.lastName}
@@ -191,6 +201,13 @@ export default function PatientDetailPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Photos */}
+      <PatientPhotos
+        patientId={id}
+        photos={patient.photos}
+        onSuccess={refetch}
+      />
 
       {/* Appointments */}
       <Card>
