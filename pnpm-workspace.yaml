@@ -1,3 +1,6 @@
+packages:
+  - mcp-server
+
 ignoredBuiltDependencies:
   - '@prisma/engines'
   - prisma

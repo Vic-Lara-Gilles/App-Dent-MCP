@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "dent-ai": {
+      "type": "stdio",
+      "command": "pnpm",
+      "args": [
+        "-C",
+        "${workspaceFolder}/mcp-server",
+        "run",
+        "dev"
+      ],
+      "env": {
+        "API_BASE_URL": "http://localhost:3000"
+      }
+    }
+  }
+}
