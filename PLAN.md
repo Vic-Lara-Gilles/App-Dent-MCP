@@ -305,9 +305,37 @@ Patient 1──N Appointment
 - [ ] Testing E2E
 - **Entregable:** Sistema completo con voz y MCP
 
+### Sprint 6 — Autenticación y Multi-Dentista (Actual)
+
+#### Objetivo
+Cada dentista accede con login propio y ve solo sus datos. Un administrador ve todo.
+
+#### Cambios en Modelo de Datos
+- Nuevo modelo `User` con `email`, `passwordHash`, `role` (ADMIN | DENTIST)
+- `User` se vincula opcionalmente a `Dentist` (FK `dentistId`)
+- El admin no necesita perfil de dentista
+
+#### Lógica de Acceso
+| Rol     | Ve pacientes              | Ve tratamientos | Ve citas   | Ve dentistas   | Dashboard                |
+| ------- | ------------------------- | --------------- | ---------- | -------------- | ------------------------ |
+| DENTIST | Solo donde es `dentistId` | Solo suyos      | Solo suyas | Solo su perfil | Solo sus ingresos/deudas |
+| ADMIN   | Todos                     | Todos           | Todas      | Todos          | Toda la clínica          |
+
+#### Tareas
+- [x] Instalar dependencias auth (bcrypt, jose)
+- [x] Modelo `User` + enum `UserRole` + migración
+- [x] Librería auth: hash passwords, JWT sign/verify, cookie session
+- [x] API: POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me
+- [x] Middleware `withAuth` para proteger API routes
+- [x] Login page (/login)
+- [x] Middleware Next.js para proteger páginas (redirect a /login)
+- [x] Filtrar datos por `dentistId` en services (scope)
+- [x] Sidebar: mostrar usuario, botón logout
+- [x] Seed: crear usuarios (admin + dentistas)
+- **Entregable:** Login funcional con datos aislados por dentista
+
 ---
 
-## Estructura de Carpetas (Propuesta)
 
 ```
 Mcp-Notes/
