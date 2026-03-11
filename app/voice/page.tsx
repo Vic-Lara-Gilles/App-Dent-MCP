@@ -60,7 +60,7 @@ export default function VoicePage() {
         </p>
       </div>
 
-      <Card className="min-h-[400px] flex flex-col">
+      <Card className="min-h-100 flex flex-col">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-muted-foreground">
             Conversación
