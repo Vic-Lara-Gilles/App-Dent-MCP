@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Pacientes ───────────────────────────────────────
+
+model Patient {
+  id           String        @id @default(cuid())
+  firstName    String
+  lastName     String
+  phone        String        @unique
+  email        String?
+  notes        String?
+  treatments   Treatment[]
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+// ─── Tratamientos (Bonos) ────────────────────────────
+
+model Treatment {
+  id          String          @id @default(cuid())
+  description String
+  totalAmount Decimal         @db.Decimal(10, 2)
+  status      TreatmentStatus @default(IN_PROGRESS)
+  patient     Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientId   String
+  payments    Payment[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+// ─── Pagos / Abonos ─────────────────────────────────
+
+model Payment {
+  id          String        @id @default(cuid())
+  amount      Decimal       @db.Decimal(10, 2)
+  method      PaymentMethod @default(CASH)
+  note        String?
+  treatment   Treatment     @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+  treatmentId String
+  createdAt   DateTime      @default(now())
+}
+
+// ─── Citas ───────────────────────────────────────────
+
+model Appointment {
+  id           String            @id @default(cuid())
+  title        String
+  description  String?
+  date         DateTime
+  duration     Int
+  status       AppointmentStatus @default(SCHEDULED)
+  patient      Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientId    String
+  whatsappSent Boolean           @default(false)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+// ─── Enums ───────────────────────────────────────────
+
+enum TreatmentStatus {
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  CARD
+  OTHER
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
