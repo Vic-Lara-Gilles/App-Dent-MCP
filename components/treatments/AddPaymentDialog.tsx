@@ -52,7 +52,7 @@ export function AddPaymentDialog({ treatmentId, balance }: AddPaymentDialogProps
       return;
     }
     if (numAmount > balance) {
-      toast.error(`El monto excede el saldo pendiente ($${balance.toFixed(2)})`);
+      toast.error(`El monto excede el saldo pendiente ($${balance.toLocaleString("es-CL", { minimumFractionDigits: 0 })})`);
       return;
     }
 
@@ -107,7 +107,7 @@ export function AddPaymentDialog({ treatmentId, balance }: AddPaymentDialogProps
             <Label htmlFor="amount">
               Monto{" "}
               <span className="text-xs text-muted-foreground">
-                (saldo: ${balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })})
+                (saldo: ${balance.toLocaleString("es-CL", { minimumFractionDigits: 0 })})
               </span>
             </Label>
             <Input

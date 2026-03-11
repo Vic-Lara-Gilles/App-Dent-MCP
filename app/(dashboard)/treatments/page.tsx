@@ -80,13 +80,13 @@ export default async function TreatmentsPage() {
               <CardContent>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">
-                    Total: ${Number(t.totalAmount).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                    Total: ${Number(t.totalAmount).toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                   </span>
                   <span className="text-muted-foreground">
-                    Pagado: ${t.paid.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                    Pagado: ${t.paid.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                   </span>
                   <span className={t.balance > 0 ? "font-semibold text-red-600" : "font-semibold text-green-600"}>
-                    Saldo: ${t.balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                    Saldo: ${t.balance.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                   </span>
                 </div>
                 {/* Progress bar */}
