@@ -1,15 +1,17 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Calendar, CreditCard, LayoutDashboard, Users } from "lucide-react";
+import { Calendar, CreditCard, LayoutDashboard, Mic, Stethoscope, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/patients", label: "Pacientes", icon: Users },
+  { href: "/dentists", label: "Dentistas", icon: Stethoscope },
   { href: "/treatments", label: "Pagos", icon: CreditCard },
   { href: "/appointments", label: "Citas", icon: Calendar },
+  { href: "/voice", label: "Voz", icon: Mic },
 ];
 
 export function Sidebar() {

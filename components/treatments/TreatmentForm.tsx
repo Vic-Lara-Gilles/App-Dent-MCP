@@ -1,5 +1,6 @@
 "use client";
 
+import { DentistSelect } from "@/components/dentists/DentistSelect";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +23,7 @@ interface Props {
 export function TreatmentForm({ patientId, onSuccess }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dentistId, setDentistId] = useState<string | undefined>();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,6 +38,7 @@ export function TreatmentForm({ patientId, onSuccess }: Props) {
         description: formData.get("description") as string,
         totalAmount: Number(formData.get("totalAmount")),
         patientId,
+        dentistId,
       }),
     });
 
@@ -49,6 +52,7 @@ export function TreatmentForm({ patientId, onSuccess }: Props) {
 
     toast.success("Tratamiento creado");
     setOpen(false);
+    setDentistId(undefined);
     (e.target as HTMLFormElement).reset();
     onSuccess();
   }
@@ -83,6 +87,10 @@ export function TreatmentForm({ patientId, onSuccess }: Props) {
               placeholder="0.00"
               required
             />
+          </div>
+          <div className="space-y-2">
+            <Label>Dentista</Label>
+            <DentistSelect value={dentistId} onValueChange={setDentistId} />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button

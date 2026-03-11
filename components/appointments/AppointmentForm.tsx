@@ -1,5 +1,6 @@
 "use client";
 
+import { DentistSelect } from "@/components/dentists/DentistSelect";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +26,7 @@ interface Props {
 export function AppointmentForm({ patientId, defaultDate, onSuccess }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dentistId, setDentistId] = useState<string | undefined>();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,6 +43,7 @@ export function AppointmentForm({ patientId, defaultDate, onSuccess }: Props) {
         date: formData.get("date") as string,
         duration: Number(formData.get("duration")),
         patientId,
+        dentistId,
       }),
     });
 
@@ -54,6 +57,7 @@ export function AppointmentForm({ patientId, defaultDate, onSuccess }: Props) {
 
     toast.success("Cita agendada");
     setOpen(false);
+    setDentistId(undefined);
     (e.target as HTMLFormElement).reset();
     onSuccess();
   }
@@ -112,6 +116,10 @@ export function AppointmentForm({ patientId, defaultDate, onSuccess }: Props) {
           <div className="space-y-2">
             <Label htmlFor="description">Notas (opcional)</Label>
             <Textarea id="description" name="description" rows={2} />
+          </div>
+          <div className="space-y-2">
+            <Label>Dentista</Label>
+            <DentistSelect value={dentistId} onValueChange={setDentistId} />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
