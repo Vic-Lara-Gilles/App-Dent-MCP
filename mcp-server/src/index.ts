@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerAppointmentTools } from "./tools/appointments.js";
 import { registerDashboardTools } from "./tools/dashboard.js";
+import { registerDentistTools } from "./tools/dentists.js";
 import { registerPatientTools } from "./tools/patients.js";
 import { registerTreatmentTools } from "./tools/treatments.js";
 
@@ -11,6 +12,7 @@ const server = new McpServer({
 });
 
 registerPatientTools(server);
+registerDentistTools(server);
 registerTreatmentTools(server);
 registerAppointmentTools(server);
 registerDashboardTools(server);
