@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { VoiceInput } from "@/components/voice/VoiceInput";
 import { VoiceOutput } from "@/components/voice/VoiceOutput";
 import { Mic, Send } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Message {
   id: number;
@@ -19,25 +19,43 @@ export default function VoicePage() {
   const [input, setInput] = useState("");
   const [processing, setProcessing] = useState(false);
   const idRef = useRef(0);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  const processCommand = useCallback(
-    async (text: string) => {
-      const userMsg: Message = { id: ++idRef.current, role: "user", text };
-      setMessages((prev) => [...prev, userMsg]);
-      setProcessing(true);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-      const reply = await interpretCommand(text);
+  const processCommand = useCallback(async (text: string) => {
+    const userMsg: Message = { id: ++idRef.current, role: "user", text };
+    setMessages((prev) => [...prev, userMsg]);
+    setProcessing(true);
 
-      const assistantMsg: Message = {
-        id: ++idRef.current,
-        role: "assistant",
-        text: reply,
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
+    try {
+      const res = await fetch("/api/voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+      const reply: string =
+        data.reply ?? data.error ?? "Error al procesar la solicitud.";
+      setMessages((prev) => [
+        ...prev,
+        { id: ++idRef.current, role: "assistant", text: reply },
+      ]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: ++idRef.current,
+          role: "assistant",
+          text: "Error de conexión con el servidor.",
+        },
+      ]);
+    } finally {
       setProcessing(false);
-    },
-    []
-  );
+    }
+  }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -80,8 +98,8 @@ export default function VoicePage() {
             >
               <div
                 className={`rounded-lg px-4 py-2 max-w-[80%] text-sm ${m.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted"
                   }`}
               >
                 <p>{m.text}</p>
@@ -96,6 +114,7 @@ export default function VoicePage() {
               </div>
             </div>
           )}
+          <div ref={bottomRef} />
         </CardContent>
       </Card>
 
@@ -116,81 +135,3 @@ export default function VoicePage() {
   );
 }
 
-async function interpretCommand(text: string): Promise<string> {
-  const lower = text.toLowerCase();
-
-  // Patient search
-  if (lower.includes("busca") || lower.includes("paciente")) {
-    const nameMatch = text.match(
-      /(?:busca|buscar|paciente)\s+(?:a\s+)?(.+)/i
-    );
-    const query = nameMatch?.[1]?.trim();
-
-    if (query) {
-      const res = await fetch(
-        `/api/patients?search=${encodeURIComponent(query)}`
-      );
-      const data = await res.json();
-      if (!data.data?.length) return `No encontré pacientes con "${query}".`;
-      const list = data.data
-        .slice(0, 5)
-        .map(
-          (p: { firstName: string; lastName: string; phone: string }) =>
-            `${p.firstName} ${p.lastName} (${p.phone})`
-        )
-        .join(", ");
-      return `Encontré ${data.total} resultado(s): ${list}`;
-    }
-  }
-
-  // How many patients
-  if (
-    lower.includes("cuántos pacientes") ||
-    lower.includes("cuantos pacientes")
-  ) {
-    const res = await fetch("/api/patients?limit=1");
-    const data = await res.json();
-    return `Hay ${data.total} paciente(s) registrado(s).`;
-  }
-
-  // Appointments today
-  if (lower.includes("cita") && (lower.includes("hoy") || lower.includes("hoy"))) {
-    const today = new Date().toISOString().slice(0, 10);
-    const res = await fetch(`/api/appointments?from=${today}&to=${today}`);
-    const data = await res.json();
-    return `Hay ${data.data?.length ?? 0} cita(s) para hoy.`;
-  }
-
-  // How many dentists
-  if (
-    lower.includes("cuántos dentistas") ||
-    lower.includes("cuantos dentistas")
-  ) {
-    const res = await fetch("/api/dentists?limit=1");
-    const data = await res.json();
-    return `Hay ${data.total} dentista(s) registrado(s).`;
-  }
-
-  // Dentist search
-  if (lower.includes("dentista")) {
-    const nameMatch = text.match(/dentista\s+(.+)/i);
-    const query = nameMatch?.[1]?.trim();
-    if (query) {
-      const res = await fetch(
-        `/api/dentists?search=${encodeURIComponent(query)}`
-      );
-      const data = await res.json();
-      if (!data.data?.length) return `No encontré dentistas con "${query}".`;
-      const list = data.data
-        .slice(0, 5)
-        .map(
-          (d: { firstName: string; lastName: string; specialty: string | null }) =>
-            `Dr. ${d.firstName} ${d.lastName}${d.specialty ? ` (${d.specialty})` : ""}`
-        )
-        .join(", ");
-      return `Encontré ${data.total}: ${list}`;
-    }
-  }
-
-  return `No pude interpretar "${text}". Prueba con: "Busca a María", "¿Cuántos pacientes?" o "Citas de hoy".`;
-}
