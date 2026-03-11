@@ -1,4 +1,5 @@
 import { PrismaPg } from "@prisma/adapter-pg";
+import { hash } from "bcryptjs";
 import { PrismaClient } from "../app/generated/prisma/client";
 
 const adapter = new PrismaPg({
@@ -16,6 +17,7 @@ async function main() {
   await prisma.appointment.deleteMany();
   await prisma.treatment.deleteMany();
   await prisma.patient.deleteMany();
+  await prisma.user.deleteMany();
   await prisma.dentist.deleteMany();
   console.log("🗑️  Datos anteriores eliminados");
 
@@ -50,6 +52,48 @@ async function main() {
     }),
   ]);
   console.log("🦷 3 dentistas creados");
+
+  // ─── Usuarios ─────────────────────────────────────────
+  const defaultPassword = await hash("password123", 12);
+
+  await Promise.all([
+    prisma.user.create({
+      data: {
+        email: "admin@dentai.com",
+        passwordHash: defaultPassword,
+        name: "Administrador",
+        role: "ADMIN",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        email: "c.ramirez@dentai.com",
+        passwordHash: defaultPassword,
+        name: "Dr. Carlos Ramirez",
+        role: "DENTIST",
+        dentistId: drRamirez.id,
+      },
+    }),
+    prisma.user.create({
+      data: {
+        email: "s.lopez@dentai.com",
+        passwordHash: defaultPassword,
+        name: "Dra. Sofia Lopez",
+        role: "DENTIST",
+        dentistId: draLopez.id,
+      },
+    }),
+    prisma.user.create({
+      data: {
+        email: "a.mendez@dentai.com",
+        passwordHash: defaultPassword,
+        name: "Dr. Andres Mendez",
+        role: "DENTIST",
+        dentistId: drMendez.id,
+      },
+    }),
+  ]);
+  console.log("👤 4 usuarios creados (admin + 3 dentistas) — password: password123");
 
   // ─── Pacientes ────────────────────────────────────────
   const patients = await Promise.all([
