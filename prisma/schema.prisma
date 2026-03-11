@@ -13,6 +13,20 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Usuarios (Auth) ─────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole @default(DENTIST)
+  dentist      Dentist? @relation(fields: [dentistId], references: [id], onDelete: SetNull)
+  dentistId    String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 // ─── Pacientes ───────────────────────────────────────
 
 model Patient {
@@ -37,6 +51,7 @@ model Dentist {
   phone        String        @unique
   email        String?
   specialty    String?
+  user         User?
   treatments   Treatment[]
   appointments Appointment[]
   createdAt    DateTime      @default(now())
@@ -110,4 +125,9 @@ enum AppointmentStatus {
   CANCELLED
   COMPLETED
   NO_SHOW
+}
+
+enum UserRole {
+  ADMIN
+  DENTIST
 }
