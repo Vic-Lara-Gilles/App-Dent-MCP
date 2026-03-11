@@ -12,6 +12,7 @@ export const appointmentRepository = {
     status?: AppointmentStatus;
     dateFrom?: Date;
     dateTo?: Date;
+    dentistId?: string;
     skip?: number;
     take?: number;
   }) {
@@ -19,6 +20,7 @@ export const appointmentRepository = {
       where: {
         ...(params.patientId && { patientId: params.patientId }),
         ...(params.status && { status: params.status }),
+        ...(params.dentistId && { dentistId: params.dentistId }),
         ...(params.dateFrom || params.dateTo
           ? {
             date: {
@@ -40,11 +42,13 @@ export const appointmentRepository = {
     status?: AppointmentStatus;
     dateFrom?: Date;
     dateTo?: Date;
+    dentistId?: string;
   }) {
     return prisma.appointment.count({
       where: {
         ...(params.patientId && { patientId: params.patientId }),
         ...(params.status && { status: params.status }),
+        ...(params.dentistId && { dentistId: params.dentistId }),
         ...(params.dateFrom || params.dateTo
           ? {
             date: {

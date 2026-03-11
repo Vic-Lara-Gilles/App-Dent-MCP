@@ -23,7 +23,7 @@ function calcDebt(treatments: { totalAmount: unknown; payments: { amount: unknow
 // DIP: Depends on repository abstraction, not directly on Prisma
 
 export const patientService = {
-  async list(params: PatientSearchParams) {
+  async list(params: PatientSearchParams & { dentistId?: string }) {
     const page = Math.max(1, params.page || 1);
     const limit = Math.min(50, Math.max(1, params.limit || 20));
     const skip = (page - 1) * limit;
@@ -39,8 +39,8 @@ export const patientService = {
       : undefined;
 
     const [patients, total] = await Promise.all([
-      patientRepository.findMany({ where, skip, take: limit }),
-      patientRepository.count(where),
+      patientRepository.findMany({ where, skip, take: limit, dentistId: params.dentistId }),
+      patientRepository.count(where, params.dentistId),
     ]);
 
     const data = patients.map((patient) => ({

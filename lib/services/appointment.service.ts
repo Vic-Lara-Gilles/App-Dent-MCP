@@ -10,6 +10,7 @@ export const appointmentService = {
     status?: AppointmentStatus;
     dateFrom?: Date;
     dateTo?: Date;
+    dentistId?: string;
     page?: number;
     limit?: number;
   }) {

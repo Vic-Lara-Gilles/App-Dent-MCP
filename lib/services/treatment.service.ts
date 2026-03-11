@@ -19,6 +19,7 @@ export const treatmentService = {
   async list(params: {
     patientId?: string;
     status?: "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+    dentistId?: string;
     page?: number;
     limit?: number;
   }) {

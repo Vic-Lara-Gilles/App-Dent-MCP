@@ -26,9 +26,17 @@ export const patientRepository = {
     where?: Prisma.PatientWhereInput;
     skip?: number;
     take?: number;
+    dentistId?: string;
   }) {
+    const where: Prisma.PatientWhereInput = {
+      ...params.where,
+      ...(params.dentistId && {
+        treatments: { some: { dentistId: params.dentistId } },
+      }),
+    };
+
     return prisma.patient.findMany({
-      where: params.where,
+      where,
       include: patientWithTreatments,
       orderBy: { createdAt: "desc" },
       skip: params.skip,
@@ -36,8 +44,14 @@ export const patientRepository = {
     });
   },
 
-  async count(where?: Prisma.PatientWhereInput) {
-    return prisma.patient.count({ where });
+  async count(where?: Prisma.PatientWhereInput, dentistId?: string) {
+    const fullWhere: Prisma.PatientWhereInput = {
+      ...where,
+      ...(dentistId && {
+        treatments: { some: { dentistId } },
+      }),
+    };
+    return prisma.patient.count({ where: fullWhere });
   },
 
   async findById(id: string) {

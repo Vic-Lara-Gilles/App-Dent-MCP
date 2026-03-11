@@ -11,6 +11,7 @@ export const treatmentRepository = {
   async findMany(params: {
     patientId?: string;
     status?: TreatmentStatus;
+    dentistId?: string;
     skip?: number;
     take?: number;
   }) {
@@ -18,6 +19,7 @@ export const treatmentRepository = {
       where: {
         ...(params.patientId && { patientId: params.patientId }),
         ...(params.status && { status: params.status }),
+        ...(params.dentistId && { dentistId: params.dentistId }),
       },
       include: treatmentWithPayments,
       orderBy: { createdAt: "desc" },
@@ -26,11 +28,12 @@ export const treatmentRepository = {
     });
   },
 
-  async count(params: { patientId?: string; status?: TreatmentStatus }) {
+  async count(params: { patientId?: string; status?: TreatmentStatus; dentistId?: string }) {
     return prisma.treatment.count({
       where: {
         ...(params.patientId && { patientId: params.patientId }),
         ...(params.status && { status: params.status }),
+        ...(params.dentistId && { dentistId: params.dentistId }),
       },
     });
   },
