@@ -1,5 +1,5 @@
-import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../app/generated/prisma/client";
 
 const adapter = new PrismaPg({
   connectionString:
@@ -129,7 +129,7 @@ async function main() {
   // ─── Tratamientos ─────────────────────────────────────
   const now = new Date();
 
-  const treatments = await Promise.all([
+  await Promise.all([
     // María – Ortodoncia (en progreso, pagos parciales)
     prisma.treatment.create({
       data: {
