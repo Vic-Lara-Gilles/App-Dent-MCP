@@ -10,7 +10,9 @@ export const createPatientSchema = z.object({
   notes: z.string().optional(),
 });
 
-export const updatePatientSchema = createPatientSchema.partial();
+export const updatePatientSchema = createPatientSchema.partial().extend({
+  avatarUrl: z.string().nullable().optional(),
+});
 
 // ─── Treatment ───────────────────────────────────────
 

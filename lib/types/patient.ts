@@ -1,6 +1,13 @@
 // ─── Patient Types ───────────────────────────────────
 // Single source of truth for Patient-related types (ISP)
 
+export interface PatientPhoto {
+  id: string;
+  url: string;
+  label: string | null;
+  createdAt: string;
+}
+
 export interface PatientBase {
   id: string;
   firstName: string;
@@ -8,6 +15,7 @@ export interface PatientBase {
   phone: string;
   email: string | null;
   notes: string | null;
+  avatarUrl: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,6 +54,7 @@ export interface PatientDetail extends PatientBase {
   totalDebt: number;
   treatments: TreatmentDetail[];
   appointments: AppointmentDetail[];
+  photos: PatientPhoto[];
 }
 
 export interface CreatePatientData {
@@ -62,6 +71,7 @@ export interface UpdatePatientData {
   phone?: string;
   email?: string;
   notes?: string;
+  avatarUrl?: string | null;
 }
 
 export interface PaginatedResult<T> {

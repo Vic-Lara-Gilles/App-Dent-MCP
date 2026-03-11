@@ -93,6 +93,7 @@ export const patientService = {
       ...(parsed.data.phone !== undefined && { phone: parsed.data.phone }),
       ...(parsed.data.email !== undefined && { email: parsed.data.email || null }),
       ...(parsed.data.notes !== undefined && { notes: parsed.data.notes || null }),
+      ...(parsed.data.avatarUrl !== undefined && { avatarUrl: parsed.data.avatarUrl }),
     });
   },
 

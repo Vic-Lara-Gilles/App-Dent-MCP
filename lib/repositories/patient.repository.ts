@@ -19,6 +19,9 @@ const patientFullDetail = {
   appointments: {
     orderBy: { date: "desc" as const },
   },
+  photos: {
+    orderBy: { createdAt: "desc" as const },
+  },
 } satisfies Prisma.PatientInclude;
 
 export const patientRepository = {
@@ -75,5 +78,26 @@ export const patientRepository = {
 
   async delete(id: string) {
     return prisma.patient.delete({ where: { id } });
+  },
+
+  async createPhoto(patientId: string, url: string, label?: string) {
+    return prisma.patientPhoto.create({
+      data: { patientId, url, label: label ?? null },
+    });
+  },
+
+  async findPhoto(photoId: string) {
+    return prisma.patientPhoto.findUnique({ where: { id: photoId } });
+  },
+
+  async deletePhoto(photoId: string) {
+    return prisma.patientPhoto.delete({ where: { id: photoId } });
+  },
+
+  async listPhotos(patientId: string) {
+    return prisma.patientPhoto.findMany({
+      where: { patientId },
+      orderBy: { createdAt: "desc" },
+    });
   },
 };
