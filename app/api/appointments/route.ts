@@ -1,6 +1,6 @@
+import type { AppointmentStatus } from "@/app/generated/prisma/client";
 import { handleApiError, successResponse } from "@/lib/api-response";
 import { appointmentService } from "@/lib/services";
-import type { AppointmentStatus } from "@/app/generated/prisma/client";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {

@@ -1,6 +1,8 @@
 "use client";
 
 import { PatientForm } from "@/components/patients/PatientForm";
+import { PaymentForm } from "@/components/treatments/PaymentForm";
+import { TreatmentForm } from "@/components/treatments/TreatmentForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,8 +93,9 @@ export default function PatientDetailPage() {
 
       {/* Treatments */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Tratamientos</CardTitle>
+          <TreatmentForm patientId={id} onSuccess={refetch} />
         </CardHeader>
         <CardContent>
           {patient.treatments.length === 0 ? (
@@ -114,21 +117,30 @@ export default function PatientDetailPage() {
                           Creado: {new Date(t.createdAt).toLocaleDateString("es-MX")}
                         </p>
                       </div>
-                      <Badge
-                        variant={
-                          t.status === "COMPLETED"
-                            ? "secondary"
-                            : t.status === "CANCELLED"
-                              ? "outline"
-                              : "default"
-                        }
-                      >
-                        {t.status === "IN_PROGRESS"
-                          ? "En progreso"
-                          : t.status === "COMPLETED"
-                            ? "Completado"
-                            : "Cancelado"}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        {t.status === "IN_PROGRESS" && remaining > 0 && (
+                          <PaymentForm
+                            treatmentId={t.id}
+                            balance={remaining}
+                            onSuccess={refetch}
+                          />
+                        )}
+                        <Badge
+                          variant={
+                            t.status === "COMPLETED"
+                              ? "secondary"
+                              : t.status === "CANCELLED"
+                                ? "outline"
+                                : "default"
+                          }
+                        >
+                          {t.status === "IN_PROGRESS"
+                            ? "En progreso"
+                            : t.status === "COMPLETED"
+                              ? "Completado"
+                              : "Cancelado"}
+                        </Badge>
+                      </div>
                     </div>
 
                     {/* Progress bar */}
