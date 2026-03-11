@@ -11,7 +11,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ─── Pacientes ───────────────────────────────────────
@@ -29,6 +28,21 @@ model Patient {
   updatedAt    DateTime      @updatedAt
 }
 
+// ─── Dentistas ───────────────────────────────────────
+
+model Dentist {
+  id           String        @id @default(cuid())
+  firstName    String
+  lastName     String
+  phone        String        @unique
+  email        String?
+  specialty    String?
+  treatments   Treatment[]
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
 // ─── Tratamientos (Bonos) ────────────────────────────
 
 model Treatment {
@@ -38,6 +52,8 @@ model Treatment {
   status      TreatmentStatus @default(IN_PROGRESS)
   patient     Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
   patientId   String
+  dentist     Dentist?        @relation(fields: [dentistId], references: [id], onDelete: SetNull)
+  dentistId   String?
   payments    Payment[]
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
@@ -66,6 +82,8 @@ model Appointment {
   status       AppointmentStatus @default(SCHEDULED)
   patient      Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
   patientId    String
+  dentist      Dentist?          @relation(fields: [dentistId], references: [id], onDelete: SetNull)
+  dentistId    String?
   whatsappSent Boolean           @default(false)
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt

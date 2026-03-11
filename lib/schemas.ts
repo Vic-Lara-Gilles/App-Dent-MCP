@@ -18,6 +18,7 @@ export const createTreatmentSchema = z.object({
   description: z.string().min(1, "Descripción requerida"),
   totalAmount: z.coerce.number().positive("El monto debe ser mayor a 0"),
   patientId: z.string().min(1),
+  dentistId: z.string().optional(),
 });
 
 export const updateTreatmentSchema = z.object({
@@ -43,6 +44,7 @@ export const createAppointmentSchema = z.object({
   date: z.coerce.date(),
   duration: z.coerce.number().int().positive().default(30),
   patientId: z.string().min(1),
+  dentistId: z.string().optional(),
 });
 
 export const updateAppointmentSchema = z.object({
@@ -53,4 +55,17 @@ export const updateAppointmentSchema = z.object({
   status: z
     .enum(["SCHEDULED", "CONFIRMED", "CANCELLED", "COMPLETED", "NO_SHOW"])
     .optional(),
+  dentistId: z.string().nullable().optional(),
 });
+
+// ─── Dentist ─────────────────────────────────────────
+
+export const createDentistSchema = z.object({
+  firstName: z.string().min(1, "Nombre requerido"),
+  lastName: z.string().min(1, "Apellido requerido"),
+  phone: z.string().min(7, "Teléfono inválido"),
+  email: z.email().optional().or(z.literal("")),
+  specialty: z.string().optional(),
+});
+
+export const updateDentistSchema = createDentistSchema.partial();

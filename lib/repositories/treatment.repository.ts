@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 const treatmentWithPayments = {
   payments: { orderBy: { createdAt: "desc" as const } },
   patient: { select: { id: true, firstName: true, lastName: true, phone: true } },
+  dentist: { select: { id: true, firstName: true, lastName: true, specialty: true } },
 } satisfies Prisma.TreatmentInclude;
 
 export const treatmentRepository = {

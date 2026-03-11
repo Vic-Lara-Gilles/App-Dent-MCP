@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 
 const appointmentWithPatient = {
   patient: { select: { id: true, firstName: true, lastName: true, phone: true } },
+  dentist: { select: { id: true, firstName: true, lastName: true, specialty: true } },
 } satisfies Prisma.AppointmentInclude;
 
 export const appointmentRepository = {

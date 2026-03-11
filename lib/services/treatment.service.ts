@@ -52,6 +52,7 @@ export const treatmentService = {
       description: parsed.data.description,
       totalAmount: parsed.data.totalAmount,
       patient: { connect: { id: parsed.data.patientId } },
+      ...(parsed.data.dentistId && { dentist: { connect: { id: parsed.data.dentistId } } }),
     });
   },
 

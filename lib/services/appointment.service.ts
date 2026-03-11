@@ -44,6 +44,7 @@ export const appointmentService = {
       date: parsed.data.date,
       duration: parsed.data.duration,
       patient: { connect: { id: parsed.data.patientId } },
+      ...(parsed.data.dentistId && { dentist: { connect: { id: parsed.data.dentistId } } }),
     });
   },
 
@@ -60,6 +61,9 @@ export const appointmentService = {
       ...(parsed.data.date !== undefined && { date: parsed.data.date }),
       ...(parsed.data.duration !== undefined && { duration: parsed.data.duration }),
       ...(parsed.data.status !== undefined && { status: parsed.data.status }),
+      ...(parsed.data.dentistId !== undefined && (
+        parsed.data.dentistId ? { dentist: { connect: { id: parsed.data.dentistId } } } : { dentist: { disconnect: true } }
+      )),
     });
   },
 
