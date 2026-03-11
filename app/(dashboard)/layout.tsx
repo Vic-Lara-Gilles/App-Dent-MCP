@@ -1,3 +1,4 @@
+import { MobileNav } from "@/components/layout/MobileNav";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 
@@ -9,10 +10,25 @@ export default function DashboardLayout({
   return (
     <AuthProvider>
       <div className="flex h-screen">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-          {children}
+        {/* Sidebar — visible only on md+ */}
+        <div className="hidden md:flex">
+          <Sidebar />
+        </div>
+
+        <main className="flex-1 overflow-y-auto bg-gray-50">
+          {/* Mobile top bar */}
+          <div className="md:hidden sticky top-0 z-40 bg-white border-b px-4 h-12 flex items-center">
+            <span className="text-base font-bold">🦷 DentAI</span>
+          </div>
+
+          {/* Page content: extra bottom padding on mobile for the bottom nav */}
+          <div className="p-4 pb-24 md:p-6 md:pb-6">
+            {children}
+          </div>
         </main>
+
+        {/* Mobile bottom navigation */}
+        <MobileNav />
       </div>
     </AuthProvider>
   );

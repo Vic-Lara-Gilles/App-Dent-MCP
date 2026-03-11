@@ -25,40 +25,44 @@ export default function PatientDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.push("/patients")}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold">
-            {patient.firstName} {patient.lastName}
-          </h1>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-            <span className="flex items-center gap-1">
-              <Phone className="h-3 w-3" /> {patient.phone}
-            </span>
-            {patient.email && (
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex items-center gap-3 min-w-0">
+          <Button variant="ghost" size="icon" className="shrink-0" onClick={() => router.push("/patients")}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold truncate">
+              {patient.firstName} {patient.lastName}
+            </h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
               <span className="flex items-center gap-1">
-                <Mail className="h-3 w-3" /> {patient.email}
+                <Phone className="h-3 w-3" /> {patient.phone}
               </span>
-            )}
+              {patient.email && (
+                <span className="flex items-center gap-1 truncate">
+                  <Mail className="h-3 w-3" /> {patient.email}
+                </span>
+              )}
+            </div>
           </div>
         </div>
-        <PatientForm patient={patient} onSuccess={refetch} />
-        <Button variant="destructive" size="sm" onClick={deletePatient}>
-          <Trash2 className="h-4 w-4 mr-1" /> Eliminar
-        </Button>
+        <div className="flex items-center gap-2 pl-11 sm:pl-0 sm:ml-auto sm:shrink-0">
+          <PatientForm patient={patient} onSuccess={refetch} />
+          <Button variant="destructive" size="sm" onClick={deletePatient}>
+            <Trash2 className="h-4 w-4 mr-1" /> Eliminar
+          </Button>
+        </div>
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground">Saldo Pendiente</CardTitle>
           </CardHeader>
           <CardContent>
             <p className={`text-2xl font-bold ${patient.totalDebt > 0 ? "text-red-600" : "text-green-600"}`}>
-              ${patient.totalDebt.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+              ${patient.totalDebt.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
             </p>
           </CardContent>
         </Card>
@@ -117,7 +121,7 @@ export default function PatientDetailPage() {
                       <div>
                         <p className="font-medium">{t.description}</p>
                         <p className="text-xs text-muted-foreground">
-                          Creado: {new Date(t.createdAt).toLocaleDateString("es-MX")}
+                          Creado: {new Date(t.createdAt).toLocaleDateString("es-CL")}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -149,8 +153,8 @@ export default function PatientDetailPage() {
                     {/* Progress bar */}
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span>Pagado: ${paid.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</span>
-                        <span>Total: ${total.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</span>
+                        <span>Pagado: ${paid.toLocaleString("es-CL", { minimumFractionDigits: 0 })}</span>
+                        <span>Total: ${total.toLocaleString("es-CL", { minimumFractionDigits: 0 })}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
@@ -159,7 +163,7 @@ export default function PatientDetailPage() {
                         />
                       </div>
                       <p className="text-xs text-right mt-1 text-muted-foreground">
-                        Pendiente: ${remaining.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                        Pendiente: ${remaining.toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                       </p>
                     </div>
 
@@ -170,11 +174,11 @@ export default function PatientDetailPage() {
                         {t.payments.map((p) => (
                           <div key={p.id} className="flex justify-between text-muted-foreground">
                             <span>
-                              {new Date(p.createdAt).toLocaleDateString("es-MX")} — {p.method}
+                              {new Date(p.createdAt).toLocaleDateString("es-CL")} — {p.method}
                               {p.note ? ` (${p.note})` : ""}
                             </span>
                             <span className="font-medium text-foreground">
-                              ${Number(p.amount).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                              ${Number(p.amount).toLocaleString("es-CL", { minimumFractionDigits: 0 })}
                             </span>
                           </div>
                         ))}
@@ -200,13 +204,13 @@ export default function PatientDetailPage() {
           ) : (
             <div className="space-y-2">
               {patient.appointments.map((a) => {
-                const reminderMsg = `Hola ${patient.firstName}, le recordamos su cita "${a.title}" el ${new Date(a.date).toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" })} a las ${new Date(a.date).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}. Duración aprox. ${a.duration} min. \u00a1Le esperamos!`;
+                const reminderMsg = `Hola ${patient.firstName}, le recordamos su cita "${a.title}" el ${new Date(a.date).toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" })} a las ${new Date(a.date).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}. Duración aprox. ${a.duration} min. \u00a1Le esperamos!`;
                 return (
                   <div key={a.id} className="flex items-center justify-between border rounded-lg p-3 gap-2">
                     <div className="min-w-0">
                       <p className="font-medium text-sm">{a.title}</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(a.date).toLocaleString("es-MX", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} — {a.duration} min
+                        {new Date(a.date).toLocaleString("es-CL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} — {a.duration} min
                       </p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
