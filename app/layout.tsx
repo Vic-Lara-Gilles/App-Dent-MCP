@@ -1,4 +1,3 @@
-import { Sidebar } from "@/components/layout/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
@@ -17,8 +16,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "DentAI — Gestión Dental",
-  description: "Sistema de gestión dental: pagos, citas y WhatsApp",
+  title: "DentAI — Gestion Dental",
+  description: "Sistema de gestion dental: pagos, citas y WhatsApp",
 };
 
 export default function RootLayout({
@@ -31,12 +30,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jakarta.variable} antialiased`}
       >
-        <div className="flex h-screen">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            {children}
-          </main>
-        </div>
+        {children}
         <Toaster richColors position="top-right" />
       </body>
     </html>
