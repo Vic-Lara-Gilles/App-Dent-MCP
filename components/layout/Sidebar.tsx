@@ -1,8 +1,9 @@
 "use client";
 
 import { useAuth } from "@/components/providers/AuthProvider";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import { cn } from "@/lib/utils";
-import { Calendar, CreditCard, LayoutDashboard, LogOut, Mic, Stethoscope, Users } from "lucide-react";
+import { Calendar, CreditCard, LayoutDashboard, LogOut, Mic, Moon, Stethoscope, Sun, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -18,9 +19,10 @@ const links = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { theme, toggle } = useTheme();
 
   return (
-    <aside className="w-64 border-r bg-white flex flex-col">
+    <aside className="w-64 border-r bg-background flex flex-col">
       <div className="p-6 border-b">
         <h1 className="text-xl font-bold">🦷 DentAI</h1>
         <p className="text-xs text-muted-foreground mt-1">Gestion Dental</p>
@@ -55,6 +57,13 @@ export function Sidebar() {
                 {user.role === "ADMIN" ? "Administrador" : "Dentista"}
               </p>
             </div>
+            <button
+              onClick={toggle}
+              className="p-2 rounded-md text-muted-foreground hover:bg-muted transition-colors"
+              title={theme === "dark" ? "Modo claro" : "Modo oscuro"}
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <button
               onClick={logout}
               className="p-2 rounded-md text-muted-foreground hover:bg-muted transition-colors"
