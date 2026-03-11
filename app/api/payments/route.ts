@@ -1,8 +1,8 @@
 import { handleApiError, successResponse } from "@/lib/api-response";
+import { withAuth } from "@/lib/auth";
 import { treatmentService } from "@/lib/services";
-import { NextRequest } from "next/server";
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request) => {
   try {
     const body = await request.json();
     const payment = await treatmentService.addPayment(body);
@@ -10,4 +10,4 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return handleApiError(error);
   }
-}
+});

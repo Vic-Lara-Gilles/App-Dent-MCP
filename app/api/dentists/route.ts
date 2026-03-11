@@ -1,8 +1,8 @@
 import { handleApiError, successResponse } from "@/lib/api-response";
+import { withAuth } from "@/lib/auth";
 import { dentistService } from "@/lib/services/dentist.service";
-import { NextRequest } from "next/server";
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request) => {
   try {
     const { searchParams } = new URL(request.url);
     const result = await dentistService.list({
@@ -14,9 +14,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return handleApiError(error);
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request) => {
   try {
     const body = await request.json();
     const dentist = await dentistService.create(body);
@@ -24,4 +24,4 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return handleApiError(error);
   }
-}
+}, ["ADMIN"]);

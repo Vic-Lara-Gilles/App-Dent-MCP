@@ -1,9 +1,9 @@
 import type { AppointmentStatus } from "@/app/generated/prisma/client";
 import { handleApiError, successResponse } from "@/lib/api-response";
+import { withAuth } from "@/lib/auth";
 import { appointmentService } from "@/lib/services";
-import { NextRequest } from "next/server";
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request, { dentistId }) => {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") as AppointmentStatus | null;
@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
       status: status || undefined,
       dateFrom: dateFrom ? new Date(dateFrom) : undefined,
       dateTo: dateTo ? new Date(dateTo) : undefined,
+      dentistId: dentistId || undefined,
       page: Number(searchParams.get("page")) || undefined,
       limit: Number(searchParams.get("limit")) || undefined,
     });
@@ -22,9 +23,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return handleApiError(error);
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request) => {
   try {
     const body = await request.json();
     const appointment = await appointmentService.create(body);
@@ -32,4 +33,4 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return handleApiError(error);
   }
-}
+});

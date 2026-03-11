@@ -1,25 +1,23 @@
 import { handleApiError, successResponse } from "@/lib/api-response";
+import { withAuth } from "@/lib/auth";
 import { patientService } from "@/lib/services";
-import { NextRequest } from "next/server";
 
-// ─── Patient Routes (Thin Controller) ────────────────
-// SRP: Only responsible for HTTP parsing and response delegation
-
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request, { dentistId }) => {
   try {
     const { searchParams } = new URL(request.url);
     const result = await patientService.list({
       search: searchParams.get("search") || undefined,
       page: Number(searchParams.get("page")) || undefined,
       limit: Number(searchParams.get("limit")) || undefined,
+      dentistId: dentistId || undefined,
     });
     return successResponse(result);
   } catch (error) {
     return handleApiError(error);
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request) => {
   try {
     const body = await request.json();
     const patient = await patientService.create(body);
@@ -27,4 +25,4 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return handleApiError(error);
   }
-}
+});
