@@ -1,11 +1,14 @@
 "use client";
 
+import { AppointmentForm } from "@/components/appointments/AppointmentForm";
+import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
 import { PatientForm } from "@/components/patients/PatientForm";
 import { PaymentForm } from "@/components/treatments/PaymentForm";
 import { TreatmentForm } from "@/components/treatments/TreatmentForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { WhatsAppButton } from "@/components/whatsapp/WhatsAppButton";
 import { usePatientDetail } from "@/hooks/use-patient-detail";
 import { ArrowLeft, FileText, Mail, Phone, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -187,27 +190,37 @@ export default function PatientDetailPage() {
 
       {/* Appointments */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Citas</CardTitle>
+          <AppointmentForm patientId={id} onSuccess={refetch} />
         </CardHeader>
         <CardContent>
           {patient.appointments.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sin citas registradas.</p>
           ) : (
             <div className="space-y-2">
-              {patient.appointments.map((a) => (
-                <div key={a.id} className="flex items-center justify-between border rounded-lg p-3">
-                  <div>
-                    <p className="font-medium text-sm">{a.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(a.date).toLocaleString("es-MX")} — {a.duration} min
-                    </p>
+              {patient.appointments.map((a) => {
+                const reminderMsg = `Hola ${patient.firstName}, le recordamos su cita "${a.title}" el ${new Date(a.date).toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" })} a las ${new Date(a.date).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}. Duración aprox. ${a.duration} min. \u00a1Le esperamos!`;
+                return (
+                  <div key={a.id} className="flex items-center justify-between border rounded-lg p-3 gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm">{a.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(a.date).toLocaleString("es-MX", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} — {a.duration} min
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {["SCHEDULED", "CONFIRMED"].includes(a.status) && (
+                        <WhatsAppButton phone={patient.phone} message={reminderMsg} label="Recordatorio" />
+                      )}
+                      <Badge variant={a.status === "COMPLETED" ? "secondary" : a.status === "CANCELLED" ? "destructive" : "outline"} className="hidden sm:inline-flex">
+                        {a.status === "SCHEDULED" ? "Programada" : a.status === "CONFIRMED" ? "Confirmada" : a.status === "CANCELLED" ? "Cancelada" : a.status === "COMPLETED" ? "Completada" : "No asistió"}
+                      </Badge>
+                      <AppointmentStatusButton appointmentId={a.id} current={a.status} onSuccess={refetch} />
+                    </div>
                   </div>
-                  <Badge variant={a.status === "COMPLETED" ? "secondary" : "default"}>
-                    {a.status}
-                  </Badge>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
