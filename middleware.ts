@@ -3,9 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/auth/logout"];
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || "dev-secret-change-in-production"
-);
+function getSecret() {
+  const jwt = process.env.JWT_SECRET;
+  if (!jwt) throw new Error("JWT_SECRET environment variable is required");
+  return new TextEncoder().encode(jwt);
+}
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -28,7 +30,7 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    await jwtVerify(token, secret);
+    await jwtVerify(token, getSecret());
     return NextResponse.next();
   } catch {
     if (pathname.startsWith("/api/")) {

@@ -7,9 +7,11 @@ export interface JWTPayload {
   dentistId: string | null;
 }
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || "dev-secret-change-in-production"
-);
+function getSecret() {
+  const jwt = process.env.JWT_SECRET;
+  if (!jwt) throw new Error("JWT_SECRET environment variable is required");
+  return new TextEncoder().encode(jwt);
+}
 
 const EXPIRATION = "7d";
 
@@ -18,12 +20,12 @@ export async function signToken(payload: JWTPayload): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(EXPIRATION)
-    .sign(secret);
+    .sign(getSecret());
 }
 
 export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     return payload as unknown as JWTPayload;
   } catch {
     return null;
