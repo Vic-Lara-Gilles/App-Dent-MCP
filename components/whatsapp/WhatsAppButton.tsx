@@ -28,7 +28,7 @@ export function WhatsAppButton({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn(buttonVariants({ variant, size }), "text-green-700 border-green-300 hover:bg-green-50")}
+      className={cn(buttonVariants({ variant, size }), "text-green-700 hover:bg-green-50 border-0")}
     >
       <MessageCircle className="h-3 w-3 mr-1" />
       {label}

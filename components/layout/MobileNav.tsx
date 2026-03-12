@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@/components/providers/AuthProvider";
 import { cn } from "@/lib/utils";
 import { Calendar, CreditCard, LayoutDashboard, Stethoscope, Users } from "lucide-react";
 import Link from "next/link";
@@ -16,12 +15,9 @@ const links = [
 
 export function MobileNav() {
   const pathname = usePathname();
-  const { user } = useAuth();
-
-  if (!user) return null;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t safe-area-inset-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t pb-[env(safe-area-inset-bottom)]">
       <div className="flex">
         {links.map(({ href, label, icon: Icon }) => {
           const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -35,7 +31,7 @@ export function MobileNav() {
               )}
             >
               <Icon className={cn("h-5 w-5", isActive && "stroke-[2.5]")} />
-              <span>{label}</span>
+              {label}
             </Link>
           );
         })}

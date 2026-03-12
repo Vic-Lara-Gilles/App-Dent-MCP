@@ -27,10 +27,10 @@ export default function DashboardLayout({
           <div className="p-4 pb-24 md:p-6 md:pb-6">
             {children}
           </div>
-        </main>
 
-        {/* Mobile bottom navigation */}
-        <MobileNav />
+          {/* Mobile bottom navigation */}
+          <MobileNav />
+        </main>
       </div>
     </AuthProvider>
   );
