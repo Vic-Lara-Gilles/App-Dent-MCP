@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -19,6 +19,11 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "DentAI — Gestion Dental",
   description: "Sistema de gestion dental: pagos, citas y WhatsApp",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
