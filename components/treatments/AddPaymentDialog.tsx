@@ -96,7 +96,7 @@ export function AddPaymentDialog({ treatmentId, balance }: AddPaymentDialogProps
         }
       >
         <PlusCircle className="h-3.5 w-3.5" />
-        Agregar abono
+        Abono
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
