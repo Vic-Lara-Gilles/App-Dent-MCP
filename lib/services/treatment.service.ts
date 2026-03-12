@@ -1,19 +1,13 @@
-import { prisma } from "@/lib/db";
 import { ConflictError, NotFoundError, ValidationError } from "@/lib/errors";
-import { treatmentRepository } from "@/lib/repositories";
+import { calcBalance } from "@/lib/finance";
+import { patientRepository } from "@/lib/repositories/patient.repository";
+import { paymentRepository } from "@/lib/repositories/payment.repository";
+import { treatmentRepository } from "@/lib/repositories/treatment.repository";
 import {
   createPaymentSchema,
   createTreatmentSchema,
   updateTreatmentSchema,
 } from "@/lib/schemas";
-
-function calcBalance(treatment: {
-  totalAmount: unknown;
-  payments: { amount: unknown }[];
-}): number {
-  const paid = treatment.payments.reduce((s, p) => s + Number(p.amount), 0);
-  return Math.max(0, Number(treatment.totalAmount) - paid);
-}
 
 export const treatmentService = {
   async list(params: {
@@ -46,7 +40,7 @@ export const treatmentService = {
     const parsed = createTreatmentSchema.safeParse(input);
     if (!parsed.success) throw new ValidationError(parsed.error.issues);
 
-    const patient = await prisma.patient.findUnique({ where: { id: parsed.data.patientId } });
+    const patient = await patientRepository.findById(parsed.data.patientId);
     if (!patient) throw new NotFoundError("Paciente");
 
     return treatmentRepository.create({
@@ -103,13 +97,11 @@ export const treatmentService = {
       );
     }
 
-    const payment = await prisma.payment.create({
-      data: {
-        amount: parsed.data.amount,
-        method: parsed.data.method,
-        note: parsed.data.note || null,
-        treatment: { connect: { id: parsed.data.treatmentId } },
-      },
+    const payment = await paymentRepository.create({
+      amount: parsed.data.amount,
+      method: parsed.data.method,
+      note: parsed.data.note || null,
+      treatment: { connect: { id: parsed.data.treatmentId } },
     });
 
     // Auto-complete treatment if fully paid

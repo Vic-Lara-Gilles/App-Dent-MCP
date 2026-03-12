@@ -1,7 +1,7 @@
 import type { AppointmentStatus } from "@/app/generated/prisma/client";
-import { prisma } from "@/lib/db";
 import { NotFoundError, ValidationError } from "@/lib/errors";
-import { appointmentRepository } from "@/lib/repositories";
+import { appointmentRepository } from "@/lib/repositories/appointment.repository";
+import { patientRepository } from "@/lib/repositories/patient.repository";
 import { createAppointmentSchema, updateAppointmentSchema } from "@/lib/schemas";
 
 export const appointmentService = {
@@ -36,7 +36,7 @@ export const appointmentService = {
     const parsed = createAppointmentSchema.safeParse(input);
     if (!parsed.success) throw new ValidationError(parsed.error.issues);
 
-    const patient = await prisma.patient.findUnique({ where: { id: parsed.data.patientId } });
+    const patient = await patientRepository.findById(parsed.data.patientId);
     if (!patient) throw new NotFoundError("Paciente");
 
     return appointmentRepository.create({

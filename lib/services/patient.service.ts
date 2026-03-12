@@ -1,21 +1,12 @@
 import { ConflictError, NotFoundError, ValidationError } from "@/lib/errors";
-import { patientRepository } from "@/lib/repositories";
+import { calcDebt } from "@/lib/finance";
+import { patientRepository } from "@/lib/repositories/patient.repository";
 import { createPatientSchema, updatePatientSchema } from "@/lib/schemas";
 import type {
   CreatePatientData,
   PatientSearchParams,
   UpdatePatientData,
-} from "@/lib/types";
-
-// ─── Debt Calculator ─────────────────────────────────
-// SRP: Single, reusable function for debt calculation (eliminates duplication)
-
-function calcDebt(treatments: { totalAmount: unknown; payments: { amount: unknown }[] }[]): number {
-  return treatments.reduce((sum, t) => {
-    const paid = t.payments.reduce((s, p) => s + Number(p.amount), 0);
-    return sum + (Number(t.totalAmount) - paid);
-  }, 0);
-}
+} from "@/lib/types/patient";
 
 // ─── Patient Service ─────────────────────────────────
 // SRP: Only responsible for business logic and orchestration

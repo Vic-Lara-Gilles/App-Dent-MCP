@@ -2,6 +2,7 @@ import { ConflictError, NotFoundError, ValidationError } from "@/lib/errors";
 import { dentistRepository } from "@/lib/repositories/dentist.repository";
 import { createDentistSchema, updateDentistSchema } from "@/lib/schemas";
 
+
 export const dentistService = {
   async list(params: { search?: string; page?: number; limit?: number }) {
     const page = Math.max(1, params.page || 1);
