@@ -1,22 +1,15 @@
 import { AddPaymentDialog } from "@/components/treatments/AddPaymentDialog";
 import { PaymentDonut } from "@/components/treatments/PaymentDonut";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { prisma } from "@/lib/db";
+import { calcBalance } from "@/lib/finance";
+import { treatmentRepository } from "@/lib/repositories/treatment.repository";
 import { CreditCard } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function TreatmentsPage() {
-  const treatments = await prisma.treatment.findMany({
-    include: {
-      payments: true,
-      patient: {
-        select: { id: true, firstName: true, lastName: true, rut: true, avatarUrl: true },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const treatments = await treatmentRepository.findMany({});
 
   // Group treatments by patient
   const byPatient = new Map<
@@ -56,8 +49,7 @@ export default async function TreatmentsPage() {
   // Find the first treatment with balance for AddPaymentDialog
   function firstWithBalance(group: (typeof patients)[0]) {
     for (const t of group.treatments) {
-      const paid = t.payments.reduce((s, p) => s + Number(p.amount), 0);
-      const bal = Math.max(0, Number(t.totalAmount) - paid);
+      const bal = calcBalance(t);
       if (bal > 0 && t.status === "IN_PROGRESS") return { id: t.id, balance: bal };
     }
     return null;

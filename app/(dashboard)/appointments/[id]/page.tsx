@@ -2,28 +2,13 @@ import { AppointmentStatusButton } from "@/components/appointments/AppointmentSt
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { WhatsAppButton } from "@/components/whatsapp/WhatsAppButton";
-import { prisma } from "@/lib/db";
+import { APPOINTMENT_STATUS_LABEL, APPOINTMENT_STATUS_VARIANT } from "@/lib/constants";
+import { appointmentService } from "@/lib/services/appointment.service";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
-
-const statusLabel: Record<string, string> = {
-  SCHEDULED: "Programada",
-  CONFIRMED: "Confirmada",
-  CANCELLED: "Cancelada",
-  COMPLETED: "Completada",
-  NO_SHOW: "No asistió",
-};
-
-const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  SCHEDULED: "outline",
-  CONFIRMED: "default",
-  CANCELLED: "destructive",
-  COMPLETED: "secondary",
-  NO_SHOW: "destructive",
-};
 
 export default async function AppointmentDetailPage({
   params,
@@ -31,17 +16,18 @@ export default async function AppointmentDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const appt = await prisma.appointment.findUnique({
-    where: { id },
-    include: { patient: true },
-  });
 
-  if (!appt) notFound();
+  let appt;
+  try {
+    appt = await appointmentService.getById(id);
+  } catch {
+    notFound();
+  }
 
   const apptDate = new Date(appt.date);
   const endDate = new Date(apptDate.getTime() + appt.duration * 60 * 1000);
 
-  const reminderMsg = `Hola ${appt.patient.firstName}, le recordamos su cita el ${apptDate.toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" })} a las ${apptDate.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}. Duración aprox. ${appt.duration} min. ¡Le esperamos!`;
+  const reminderMsg = `Hola ${appt.patient.firstName}, le recordamos su cita el ${apptDate.toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" })} a las ${apptDate.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}. Duracion aprox. ${appt.duration} min. Le esperamos!`;
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -50,7 +36,7 @@ export default async function AppointmentDetailPage({
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <h1 className="text-2xl font-bold flex-1">{appt.title}</h1>
-        <Badge variant={statusVariant[appt.status]}>{statusLabel[appt.status]}</Badge>
+        <Badge variant={APPOINTMENT_STATUS_VARIANT[appt.status]}>{APPOINTMENT_STATUS_LABEL[appt.status]}</Badge>
       </div>
 
       <Card>

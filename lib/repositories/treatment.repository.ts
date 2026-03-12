@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 
 const treatmentWithPayments = {
   payments: { orderBy: { createdAt: "desc" as const } },
-  patient: { select: { id: true, firstName: true, lastName: true, rut: true, phone: true } },
+  patient: { select: { id: true, firstName: true, lastName: true, rut: true, phone: true, avatarUrl: true } },
   dentist: { select: { id: true, firstName: true, lastName: true, specialty: true } },
 } satisfies Prisma.TreatmentInclude;
 

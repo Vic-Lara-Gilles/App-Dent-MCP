@@ -1,7 +1,7 @@
-import type { Prisma } from "@/app/generated/prisma/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSession } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { getSession } from "@/lib/auth/session";
+import { PAYMENT_METHOD_LABEL } from "@/lib/constants";
+import { dashboardService } from "@/lib/services/dashboard.service";
 import { AlertTriangle, Calendar, CreditCard, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -10,70 +10,16 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
   const session = await getSession();
   const dentistId = session?.dentistId || null;
-  const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
 
-  const dentistFilter: Prisma.TreatmentWhereInput = dentistId ? { dentistId } : {};
-  const appointmentDentistFilter: Prisma.AppointmentWhereInput = dentistId ? { dentistId } : {};
-
-  const [patientCount, treatmentCount, appointmentCount, todayPayments, activeTreatments, recentPayments] =
-    await Promise.all([
-      prisma.patient.count(dentistId ? { where: { treatments: { some: { dentistId } } } } : undefined),
-      prisma.treatment.count({ where: { status: "IN_PROGRESS", ...dentistFilter } }),
-      prisma.appointment.count({
-        where: {
-          date: { gte: new Date() },
-          status: { in: ["SCHEDULED", "CONFIRMED"] },
-          ...appointmentDentistFilter,
-        },
-      }),
-      prisma.payment.findMany({
-        where: {
-          createdAt: { gte: todayStart },
-          ...(dentistId ? { treatment: { dentistId } } : {}),
-        },
-      }),
-      prisma.patient.findMany({
-        where: {
-          treatments: { some: { status: "IN_PROGRESS", ...dentistFilter } },
-        },
-        include: {
-          treatments: {
-            where: { status: "IN_PROGRESS", ...dentistFilter },
-            include: { payments: { select: { amount: true } } },
-          },
-        },
-      }),
-      prisma.payment.findMany({
-        where: dentistId ? { treatment: { dentistId } } : undefined,
-        include: {
-          treatment: {
-            select: {
-              description: true,
-              patient: { select: { firstName: true, lastName: true } },
-            },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 8,
-      }),
-    ]);
-
-  const incomesToday = todayPayments.reduce((s, p) => s + Number(p.amount), 0);
-
-  // Compute debt per patient
-  const debtors = activeTreatments
-    .map((patient) => {
-      const debt = patient.treatments.reduce((sum, t) => {
-        const paid = t.payments.reduce((s, p) => s + Number(p.amount), 0);
-        return sum + Math.max(0, Number((t as { totalAmount: unknown }).totalAmount) - paid);
-      }, 0);
-      return { id: patient.id, firstName: patient.firstName, lastName: patient.lastName, debt };
-    })
-    .filter((p) => p.debt > 0)
-    .sort((a, b) => b.debt - a.debt)
-    .slice(0, 5);
-
-  const totalOutstanding = debtors.reduce((s, p) => s + p.debt, 0);
+  const {
+    patientCount,
+    treatmentCount,
+    appointmentCount,
+    incomesToday,
+    debtors,
+    totalOutstanding,
+    recentPayments,
+  } = await dashboardService.getStats(dentistId);
 
   const stats = [
     {
@@ -105,13 +51,6 @@ export default async function DashboardPage() {
       color: "text-emerald-600",
     },
   ];
-
-  const methodLabel: Record<string, string> = {
-    CASH: "Efectivo",
-    TRANSFER: "Transferencia",
-    CARD: "Tarjeta",
-    OTHER: "Otro",
-  };
 
   return (
     <div className="space-y-8">
@@ -193,7 +132,7 @@ export default async function DashboardPage() {
                         {pay.treatment.patient.firstName} {pay.treatment.patient.lastName}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
-                        {pay.treatment.description} · {methodLabel[pay.method] ?? pay.method}
+                        {pay.treatment.description} · {PAYMENT_METHOD_LABEL[pay.method] ?? pay.method}
                       </p>
                     </div>
                     <div className="text-right shrink-0">
