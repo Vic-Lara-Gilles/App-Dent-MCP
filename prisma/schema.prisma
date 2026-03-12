@@ -33,6 +33,7 @@ model Patient {
   id           String         @id @default(cuid())
   firstName    String
   lastName     String
+  rut          String?
   phone        String         @unique
   email        String?
   notes        String?

@@ -101,6 +101,7 @@ async function main() {
       data: {
         firstName: "María",
         lastName: "García",
+        rut: "12.345.678-5",
         phone: "5522001001",
         email: "maria.garcia@gmail.com",
         notes: "Alérgica a la penicilina",
@@ -110,6 +111,7 @@ async function main() {
       data: {
         firstName: "José",
         lastName: "Hernández",
+        rut: "9.876.543-2",
         phone: "5522001002",
         email: "jose.hdz@hotmail.com",
         notes: "Hipertenso, tomar presión antes del procedimiento",
@@ -119,6 +121,7 @@ async function main() {
       data: {
         firstName: "Ana",
         lastName: "Martínez",
+        rut: "15.432.109-8",
         phone: "5522001003",
         email: "ana.mtz@gmail.com",
       },
@@ -127,6 +130,7 @@ async function main() {
       data: {
         firstName: "Luis",
         lastName: "Torres",
+        rut: "18.765.432-1",
         phone: "5522001004",
         email: "luis.torres@outlook.com",
         notes: "Paciente ansioso, requiere sedación leve",
@@ -136,6 +140,7 @@ async function main() {
       data: {
         firstName: "Carmen",
         lastName: "Sánchez",
+        rut: "7.654.321-K",
         phone: "5522001005",
         email: "carmen.sanchez@gmail.com",
       },
@@ -144,6 +149,7 @@ async function main() {
       data: {
         firstName: "Roberto",
         lastName: "Díaz",
+        rut: "20.111.222-3",
         phone: "5522001006",
         email: "roberto.diaz@yahoo.com",
         notes: "Diabético tipo 2",
@@ -153,6 +159,7 @@ async function main() {
       data: {
         firstName: "Valentina",
         lastName: "Ruiz",
+        rut: "16.333.444-5",
         phone: "5522001007",
         email: "val.ruiz@gmail.com",
       },
@@ -161,6 +168,7 @@ async function main() {
       data: {
         firstName: "Miguel",
         lastName: "Flores",
+        rut: "11.222.333-4",
         phone: "5522001008",
         notes: "Embarazada. Evitar rayos X",
       },
