@@ -157,7 +157,7 @@ export function AppointmentCalendar({ events }: Props) {
         </div>
 
         {/* time grid */}
-        <div className="relative overflow-y-auto rounded-xl" style={{ maxHeight: "calc(100vh - 340px)" }}>
+        <div className="relative overflow-y-auto rounded-xl" style={{ maxHeight: "calc(100dvh - 260px)" }}>
           <div className="relative" style={{ height: HOURS.length * HOUR_H + 20 }}>
             {/* hour lines and labels */}
             {HOURS.map((h) => {
