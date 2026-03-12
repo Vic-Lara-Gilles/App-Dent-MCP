@@ -1,6 +1,6 @@
 "use client";
 
-import type { PatientDetail } from "@/lib/types";
+import type { PatientDetail } from "@/lib/types/patient";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";

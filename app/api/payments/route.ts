@@ -1,6 +1,6 @@
 import { handleApiError, successResponse } from "@/lib/api-response";
 import { withAuth } from "@/lib/auth";
-import { treatmentService } from "@/lib/services";
+import { treatmentService } from "@/lib/services/treatment.service";
 
 export const POST = withAuth(async (request) => {
   try {

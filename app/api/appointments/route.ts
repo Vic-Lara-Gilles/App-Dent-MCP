@@ -1,7 +1,7 @@
 import type { AppointmentStatus } from "@/app/generated/prisma/client";
 import { handleApiError, successResponse } from "@/lib/api-response";
 import { withAuth } from "@/lib/auth";
-import { appointmentService } from "@/lib/services";
+import { appointmentService } from "@/lib/services/appointment.service";
 
 export const GET = withAuth(async (request, { dentistId }) => {
   try {

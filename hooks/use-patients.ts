@@ -1,6 +1,6 @@
 "use client";
 
-import type { PaginatedResult, PatientListItem } from "@/lib/types";
+import type { PaginatedResult, PatientListItem } from "@/lib/types/patient";
 import { useCallback, useEffect, useState } from "react";
 
 // ─── usePatients Hook ────────────────────────────────

@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { WhatsAppButton } from "@/components/whatsapp/WhatsAppButton";
-import type { PatientListItem } from "@/lib/types";
+import type { PatientListItem } from "@/lib/types/patient";
 import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
 

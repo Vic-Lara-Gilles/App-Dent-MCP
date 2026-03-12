@@ -1,8 +1,8 @@
 import { handleApiError, successResponse } from "@/lib/api-response";
 import { withAuth } from "@/lib/auth";
 import { ValidationError } from "@/lib/errors";
-import { patientRepository } from "@/lib/repositories";
-import { patientService } from "@/lib/services";
+import { patientRepository } from "@/lib/repositories/patient.repository";
+import { patientService } from "@/lib/services/patient.service";
 import fs from "node:fs/promises";
 import path from "node:path";
 

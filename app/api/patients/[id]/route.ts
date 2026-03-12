@@ -1,6 +1,6 @@
 import { handleApiError, successResponse } from "@/lib/api-response";
 import { withAuth } from "@/lib/auth";
-import { patientService } from "@/lib/services";
+import { patientService } from "@/lib/services/patient.service";
 
 export const GET = withAuth(async (_request, { params }) => {
   try {

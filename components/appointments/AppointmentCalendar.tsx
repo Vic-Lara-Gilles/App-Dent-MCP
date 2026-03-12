@@ -133,7 +133,7 @@ export function AppointmentCalendar({ events }: Props) {
     return (
       <div className="space-y-4">
         {/* day strip */}
-        <div className="flex flex-row gap-0.5">
+        <div className="flex flex-row gap-0.5" style={{ paddingLeft: 44 }}>
           {weekDays.map((d) => (
             <button
               key={d.toISOString()}
