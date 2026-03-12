@@ -108,7 +108,7 @@ export default function AppointmentsPage() {
         <p className="text-center py-12 text-muted-foreground">Cargando...</p>
       ) : view === "calendar" ? (
         <Card>
-          <CardContent className="pt-4">
+          <CardContent className="pt-5 px-3 sm:px-5">
             <AppointmentCalendar events={calendarEvents} />
           </CardContent>
         </Card>

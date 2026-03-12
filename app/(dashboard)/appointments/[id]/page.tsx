@@ -1,10 +1,8 @@
 import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { WhatsAppButton } from "@/components/whatsapp/WhatsAppButton";
 import { prisma } from "@/lib/db";
-import { cn } from "@/lib/utils";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -48,7 +46,7 @@ export default async function AppointmentDetailPage({
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
-        <Link href="/appointments" className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}>
+        <Link href="/appointments" className="inline-flex items-center justify-center h-9 w-9 rounded-md hover:bg-muted transition-colors">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <h1 className="text-2xl font-bold flex-1">{appt.title}</h1>
