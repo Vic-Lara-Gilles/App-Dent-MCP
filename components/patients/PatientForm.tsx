@@ -20,6 +20,7 @@ interface Patient {
   id: string;
   firstName: string;
   lastName: string;
+  rut?: string | null;
   phone: string;
   email?: string | null;
   notes?: string | null;
@@ -46,6 +47,7 @@ export function PatientForm({
     const data = {
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
+      rut: formData.get("rut") as string,
       phone: formData.get("phone") as string,
       email: formData.get("email") as string,
       notes: formData.get("notes") as string,
@@ -112,15 +114,26 @@ export function PatientForm({
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Teléfono (WhatsApp) *</Label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              required
-              defaultValue={patient?.phone}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="rut">RUT</Label>
+              <Input
+                id="rut"
+                name="rut"
+                placeholder="12.345.678-9"
+                defaultValue={patient?.rut || ""}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono (WhatsApp) *</Label>
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                required
+                defaultValue={patient?.phone}
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

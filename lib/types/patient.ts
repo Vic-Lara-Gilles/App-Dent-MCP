@@ -12,6 +12,7 @@ export interface PatientBase {
   id: string;
   firstName: string;
   lastName: string;
+  rut: string | null;
   phone: string;
   email: string | null;
   notes: string | null;
@@ -60,6 +61,7 @@ export interface PatientDetail extends PatientBase {
 export interface CreatePatientData {
   firstName: string;
   lastName: string;
+  rut?: string;
   phone: string;
   email?: string;
   notes?: string;
@@ -68,6 +70,7 @@ export interface CreatePatientData {
 export interface UpdatePatientData {
   firstName?: string;
   lastName?: string;
+  rut?: string;
   phone?: string;
   email?: string;
   notes?: string;

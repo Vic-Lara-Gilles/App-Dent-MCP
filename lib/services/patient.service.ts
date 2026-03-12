@@ -69,6 +69,7 @@ export const patientService = {
     return patientRepository.create({
       firstName: parsed.data.firstName,
       lastName: parsed.data.lastName,
+      rut: parsed.data.rut || null,
       phone: parsed.data.phone,
       email: parsed.data.email || null,
       notes: parsed.data.notes || null,
@@ -90,6 +91,7 @@ export const patientService = {
     return patientRepository.update(id, {
       ...(parsed.data.firstName !== undefined && { firstName: parsed.data.firstName }),
       ...(parsed.data.lastName !== undefined && { lastName: parsed.data.lastName }),
+      ...(parsed.data.rut !== undefined && { rut: parsed.data.rut || null }),
       ...(parsed.data.phone !== undefined && { phone: parsed.data.phone }),
       ...(parsed.data.email !== undefined && { email: parsed.data.email || null }),
       ...(parsed.data.notes !== undefined && { notes: parsed.data.notes || null }),

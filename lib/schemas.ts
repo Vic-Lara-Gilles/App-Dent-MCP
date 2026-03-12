@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 export const createPatientSchema = z.object({
   firstName: z.string().min(1, "Nombre requerido"),
   lastName: z.string().min(1, "Apellido requerido"),
+  rut: z.string().optional().or(z.literal("")),
   phone: z.string().min(7, "Teléfono inválido"),
   email: z.email().optional().or(z.literal("")),
   notes: z.string().optional(),
