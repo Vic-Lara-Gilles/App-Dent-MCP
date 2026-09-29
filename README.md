@@ -2,6 +2,7 @@
 
 Aplicación web para clínicas dentales que reemplaza los registros en papel: pacientes, tratamientos, pagos, agenda de citas y comunicación por WhatsApp. Incluye un **servidor MCP** para que un agente de IA opere el sistema con lenguaje natural y un **asistente de voz** en el navegador.
 
+[![CI](https://github.com/Vic-Lara-Gilles/App-Dent-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/Vic-Lara-Gilles/App-Dent-MCP/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)
