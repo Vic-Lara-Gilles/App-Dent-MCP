@@ -128,7 +128,7 @@ export function AppointmentCalendar({ events }: Props) {
   }
 
   /* ═══════════ DAY VIEW ═══════════ */
-  function DayView() {
+  function renderDayView() {
     const dayEv = eventsFor(date);
     return (
       <div className="space-y-4">
@@ -223,7 +223,7 @@ export function AppointmentCalendar({ events }: Props) {
   }
 
   /* ═══════════ WEEK VIEW ═══════════ */
-  function WeekView() {
+  function renderWeekView() {
     const GRID_MIN_W = 620;
     return (
       <div className="overflow-x-auto overflow-y-auto rounded-xl" style={{ maxHeight: "calc(100vh - 290px)" }}>
@@ -331,7 +331,7 @@ export function AppointmentCalendar({ events }: Props) {
         </div>
       </div>
 
-      {view === "day" ? <DayView /> : <WeekView />}
+      {view === "day" ? renderDayView() : renderWeekView()}
     </div>
   );
 }
