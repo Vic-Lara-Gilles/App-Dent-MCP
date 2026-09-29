@@ -1,407 +1,152 @@
-# 🦷 DentAI — Sistema de Gestión Dental
+# DentAI — Sistema de gestión dental
 
-Sistema web para clínicas dentales que digitaliza la gestión de pacientes, tratamientos, pagos y citas. Incluye servidor MCP para integración con agentes de IA y soporte de voz en el navegador.
+Aplicación web para clínicas dentales que reemplaza los registros en papel: pacientes, tratamientos, pagos, agenda de citas y comunicación por WhatsApp. Incluye un **servidor MCP** para que un agente de IA opere el sistema con lenguaje natural y un **asistente de voz** en el navegador.
 
----
-
-## Problema que resuelve
-
-Un profesional dental lleva todos sus registros en papel: cobros pendientes, abonos parciales, citas programadas y datos de contacto. Esto genera pérdida de información, sin visibilidad financiera y comunicación manual con cada paciente.
-
-DentAI resuelve esto con:
-
-- **Control de pagos** — Bonos (deuda total) y abonos (pagos parciales) con saldo en tiempo real
-- **Agenda de citas** — Calendario visual con estados y recordatorios por WhatsApp
-- **Gestión de pacientes** — Perfil completo con historial clínico y financiero
-- **MCP Server** — Un agente de IA gestiona todo el sistema vía comandos naturales
-- **Interfaz de voz** — Dictar operaciones sin tocar el t# 🦷 DentAI — Sistema de Gestión Dental
-
-Sistema web para clic
-Sistema web para clínicas dentales qu| Next.
----
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![MCP](https://img.shields.io/badge/MCP-server-6E56CF)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Problema que resuelve
 
-Un profesional dental lleva todos sus registros en papel: cobros pendientes, abonos parciales, citas programadas y datos de contacto. Esto genera pérdida de inforCID
-#pre
-Un profesional dental RM*
-DentAI resuelve esto con:
+Un profesional dental suele llevar en papel los cobros pendientes, los abonos parciales, las citas y los datos de contacto de cada paciente. Eso provoca pérdida de información, poca visibilidad de las finanzas y mucho trabajo manual para comunicarse con los pacientes.
 
-- **Control de pagos** — Bonos (deuda total) y abonos (pagos parciales) con saldo en tiempo real
-- **Agenda de citas** — Calendario visual con estados y recordatorios por WhatsApp
-- **Gestión de pacientes**err
-- **Control de pagos** / V- **Agenda de citas** — Calendario visual con estados y recordatorios por WhatsApp
-- **Gestión* - **Gestión de pacientes** — Perfil completo con historial clínico y financiero?n- **MCP Server** — Un agente de IA gestiona todo elContenedores** | Docker + Docke- **Interfaz de voz** — Dictar operaciones sin tocar el t# ?
+## Funcionalidades
+
+- **Pacientes:** ficha con datos de contacto, RUT, notas, fotos clínicas e historial de tratamientos y pagos.
+- **Tratamientos y pagos:** cada tratamiento tiene un costo total (bono) y recibe pagos parciales (abonos) en efectivo, transferencia o tarjeta. El saldo pendiente se calcula en tiempo real.
+- **Agenda:** calendario de citas con estados (agendada, confirmada, completada, cancelada, no asistió).
+- **WhatsApp:** mensajes prellenados al paciente con un clic, por ejemplo para confirmar una cita.
+- **Dashboard:** pacientes, tratamientos y citas, ingresos del día, pagos recientes y pacientes con deuda.
+- **Varios dentistas:** usuarios con rol `ADMIN` o `DENTIST`; cada dentista ve su propia información.
+- **Servidor MCP:** 19 herramientas para que un agente de IA (Claude, Copilot, etc.) gestione pacientes, tratamientos, pagos, citas y el dashboard.
+- **Asistente de voz:** el usuario dicta una consulta en el navegador (Web Speech API), un modelo de OpenAI la responde usando los datos reales de la clínica y la respuesta se lee en voz alta.
+
+## Stack
+
+| Capa | Tecnología |
+|---|---|
+| Frontend | Next.js 16 (App Router), React 19, Tailwind CSS 4, shadcn/ui, Recharts |
+| Backend | Route Handlers de Next.js, Zod 4 |
+| Base de datos | PostgreSQL 16, Prisma 7 (`@prisma/adapter-pg`) |
+| Autenticación | JWT con `jose` en cookie httpOnly, contraseñas con `bcryptjs` |
+| IA | Vercel AI SDK + OpenAI (voz), Model Context Protocol SDK (servidor MCP) |
+| Infraestructura | Docker, Docker Compose, pnpm workspaces |
+
 ## Arquitectura
 
 ```
-
-Sistema web para clic
-Sistema web para clínicas dentales qu| Next.
----
-
-## Problema que resuelve
-
-UnoarSistema web para cl?n---
-
-## Problema que resuelve
-
-Un profesiona/ 
-#   
-Un profesional denRoutes #pre
-Un profesional dental RM*
-DentAI resuelve esto con:
-
-- **Control de pagos** — Bonos (deuda total) y abonos (pagos parciales) con saldo en tiempo real
-- **Agen── DentAI resuelve esto con?- **Control de pagos**   ? **Agenda de citas** — Calendario visual con estados y recordatorios por WhatsApp
-- **Gestiónh/- **Gestión de pacientes**err
-- **Control de pagos** / V- **Agenda de citas** — ec- **Control tivo)
+Navegador / Agente MCP
+        │
+        ▼
+app/api/**/route.ts        Route Handlers: validan la sesión y dan formato a la respuesta
+        │
+        ▼
+lib/services/*.service.ts  Reglas de negocio y validación con Zod
+        │
+        ▼
+lib/repositories/*.ts      Acceso a datos con Prisma
+        │
+        ▼
+PostgreSQL
 ```
 
-```
-MCP - **Gestión* - **Gestión de pacientes** — Perfil completo con historial clínico y financiero?n- **MCP Setm## Arquitectura
+- `middleware.ts` protege todas las rutas salvo `/login` y `/api/auth/*`.
+- Los errores de dominio (`NotFoundError`, `ValidationError`, `ConflictError`) se traducen a códigos HTTP en un solo lugar (`lib/api-response.ts`).
+- El servidor MCP (`mcp-server/`) es un paquete aparte del workspace que se comunica por stdio y llama a la API REST de la aplicación.
 
-```
+## Modelo de datos
 
-Sistema web para clic
-Sistema web para clínicas dentales qu| Next.
----
+| Modelo | Descripción |
+|---|---|
+| `User` | Cuenta de acceso con rol `ADMIN` o `DENTIST` |
+| `Dentist` | Profesional de la clínica, vinculado a un usuario |
+| `Patient` | Paciente con contacto, RUT y notas |
+| `PatientPhoto` | Fotos clínicas del paciente |
+| `Treatment` | Tratamiento con costo total y estado |
+| `Payment` | Abono a un tratamiento, con método de pago |
+| `Appointment` | Cita con fecha, dentista y estado |
 
-## Problema que resuelve
+## Instalación
 
-UnoarSistema web para cl?n---
+Requisitos: Node.js 20 o superior, pnpm 10 y Docker.
 
-## Problema que resuelve
-
-Un profesiona/ 
-#   
-Un profesional denRoutes #pre
-Un profesional dit
-```
-
-Sistema  ?SPosSistema web para cl?a---
-
-## Problema que resuelve
-
-UnoarSistRoute** —
-UnoarSistema web para ues
-## Problema que resuelve
-
-Ungic
-Un profesiona/ 
-# aciones#   
-Un profesRepositUn profesional dental RM*
-querDentAI resuelve esto conel
-- **Control de pagos** ─- **Agen── DentAI resuelve esto con?- **Control de pagos**   ? **Agenda de citas** — Cal1:- **Gestiónh/- **Gestión de pacientes**err
-- **Control de pagos** / V- **Agenda de citas** — ec- **Control tivo)
+```bash
+git clone https://github.com/Vic-Lara-Gilles/App-Dent-MCP.git
+cd App-Dent-MCP
+pnpm install
 ```
 
-```
-MCP - **Gestión* - **Gesnt- **Control de pagos** / V- **Agenda de cittr```
+Crea un archivo `.env` en la raíz:
 
-```
-MCP - **Gestión* - **Gestión de pacientes** — Perfil complega a MCro
-```
-
-Sistema web para clic
-Sistema web para clínicas dentales qu| Next.
----
-
-## Problema que resuelve
-
-UnoarSistema web para cla |
-S `DSistema webe solo sus ---
-
-## Problema que resuelve
-
-UnoarSistema  JWT en
-UnoarSistema web para nta
-## Problema que resuelve
-
-Un6, 
-Un profesiona/ 
-#   
-Udle#   
-Un profesedUn geUn profesional dit
+```env
+POSTGRES_DB=dentai
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dentai
+JWT_SECRET=un-secreto-largo-y-aleatorio
+# Opcional, para el asistente de voz
+OPENAI_API_KEY=
 ```
 
-Sist s```
+Levanta la base de datos, aplica las migraciones y carga los datos de prueba:
 
-Sistema  ?válida
-## Problema que resuelve
-
-UnoarSistRoutPI 
-UnoarSistRoute** —
-U
-##UnoarSistema web paap## Problema  TypeScript es
-Ungic
-Un profesiona/ 
-ícito en# aciones#   
- aUn profesRep TquerDentAI res desde el schema Prisma medi- **Control de pagos** ─- *rt- **Control de pagos** / V- **Agenda de citas** — ec- **Control tivo)
+```bash
+docker compose up -d db
+pnpm prisma migrate dev
+pnpm seed
+pnpm dev
 ```
 
-```
-MCP - **Gestión* - **Gesnt- **Control de pagos** / V- **Agenda de cittr```
+La aplicación queda en http://localhost:3000. Con `docker compose up -d` también puedes levantar la app completa en contenedores.
 
-```
-MCP - n ```
+**Usuario de prueba:** `admin@dentai.com` / `password123` (solo para desarrollo local).
 
-```
-MCP - **Gestión* - **Gesnt- **Control de pagos** / V- **Agens con ZMC a
-```
-MCP - **Gestión* - **Gestión de pacientes** — Perfil complega a Mentista```
+## Servidor MCP
 
-Sistema web para clic
-Sistema web para clínicas dentales qu| Nextut
-S→Sistema web para cl?r---
+El servidor expone estas herramientas:
 
-## Problema que resuelve
+| Área | Herramientas |
+|---|---|
+| Pacientes | `list_patients`, `get_patient`, `create_patient`, `update_patient` |
+| Dentistas | `list_dentists`, `get_dentist`, `create_dentist`, `update_dentist` |
+| Tratamientos y pagos | `list_treatments`, `create_treatment`, `update_treatment`, `add_payment`, `get_balance` |
+| Citas | `list_appointments`, `get_appointment`, `create_appointment`, `update_appointment`, `get_calendar` |
+| Dashboard | `get_dashboard` |
 
-UnoarSistema - Repos
-UnoarSistema web p capa dS `DSistema webe s- Servicio
-## Problema que resuelve
+Para usarlo desde VS Code, el repositorio ya incluye `.vscode/mcp.json`. Para otro cliente MCP:
 
-Ueab
-UnoarSistema  JWT en
-U ReUnoarSistema web pae
-## Problema que resuelveil
-Un6, 
-Un profesiona/ión inferi#   
-Udle#   
-`)
-- SiUn profis```
-
-Sist s```
-
-Sistema  ?váliBa
-S UI y shadcn/u## Problema quARIA n
-UnoarSistRoutPI 
-Unoar`ThUnoarSistRoute*n U
-##UnoarSistema werencUngic
-Un profesiona/ 
-ícito en# aciones#   
- aUteUn p eícito entorage` aUn profesRepSS semán```
-
-```
-MCP - **Gestión* - **Gesnt- **Control de pagos** / V- **Agenda de cittr```
-
-```
-MCP - n ```
-
-```
-MCP - **Gestión* - **Gesnt- **Control de pagos** / `t
-`e(scope
-```
-MCP - n ```
-
-```
-MCP - **Gestión* - **Gesnt- **Control de pagos** / io MC?g
-```
-MCP -mmit
-- ```
-MCP - **Gestión* - **Gestión de pacientes** — Perfil complega acoMC L
-Sistema web para clic
-Sistema web para clínicas dentales qu| Nextut
-S→SisthilSistema web para cl? S→Sistema web para cl?r---
-
-## Problema qute
-## Problema que resustructura 
-UnoarSistema - Repos
-U─UnoarSistema web p ??## Problema que resuelve
-
-Uea?? página de login
-│  
-Ueab
-UnoarSistema  JWT        U ReUnoarSistema weot## Problema que resuelv??Un6, 
-Un profesiona/ió ←Un phbUdle#   
-`)
-- SiUn profis```├── p-ti
-Sist s```
-
-Sis ?Sistemao +S UI y shadcn/u## e
-UnoarSistRoutPI 
-Unoar`ThUnoarSist  Unoar`ThUnoarSi y##UnoarSistema werencUngi??n profesiona/ 
-?     ← ícito en# acida aUteUn p eícito ent??```
-MCP - **Gestión* - **Gesnt- **Control de pagos   MC? 
-```
-MCP - n ```
-
-```
-MCP - **Gestión* - **Gesnt- **Control de pagos** /    MC  
-```
-MCP -  ← A`e(scope
-```
-MCP - n ```
-
-```
-MCP - **Gestión* - **Glayout/    MC  
-```
-MCP -?? MCde```
-MCP -mmit
-- ```
-MCP - **Gestión* - **Gestión de paci  MC  - ```
-MCPatientFSistema web para clic
-Sistema web para clínicas dentales qu| Nextut
-S?mSistema web para cl?mS→SisthilSistema web para cl? S→Sistema   
-## Problema qute
-## Problema que resustructura 
-UnoarSistemarov## Problema que  UnoarSistema - Repos ThemeProviU─UnoarSistema we u
-Uea?? página de login
-│  
-Ueab
-UnoarSistema dcn│  
-Ueab
-UnoarSiste??Ueab??─?n profesiona/ió ←Un phbUdle#   
-`)
-- SiUn profis```├── p-ti
-Sist s
-`)
-- SiUn profis```├── p-ti
-  -  Sist s```
-
-Sis ?Sistemao +S??
-Sis ????noarSistRoutPI 
-Unoar`ThUnoarSist atUnoar`ThUnoarSi, ?     ← ícito en# acida aUteUn p eícito ent??```
-MCP - **Gestión* - **??MCP - **Gestión* - **Gesnt- **Control de pagos   MC???``
-MCP - n ```
-
-```
-MCP - **Gestión* - **Gesnt- **C─ do
-```
-MCP -se.MCl
-```
-MCP -  ← A`e(scope
-```
-MCP - n ```
-
-```
-MNode.js 20+
--MCnp```
-MCP - n ```
-
-``keMCCo
-pose
-
-### 1. Clo```
-MCP -?? MCde```
-MCP -mmit
-- ```
-MitMCloMCP -mmit
-- ``pp- ```
-MCMCMCP  .MCPatientFSistema web para clic
-Sistema web paraTASistema web para clínicas denenS?mSistema web para cl?mS→SisthilSistemabi## Problema qute
-## Problema que resustructura 
-UnoarSistemarov## Problemr ## Problema queb
-UnoarSistemarov## Problema quciUea?? página de login
-│  
-Ueab
-UnoarSistema dcn│  
-Ueab
-UnoarSiste??Ueab??─?4│  
-Ueab
-UnoarSisteloUeab`bash
-pUeab
-UnoarSiste??UeattUno/l`)
-- SiUn profis```├── p-ti
-Sist s
-`)
-- SiUn profise pruSist s
-`)
-- SiUn profis```├d `)
--  |-|-  -  Sist s```
-
-Sis ?Sist.com
-Sis ?Siste123Sis ????noarSist
-|Unoar`ThUnoarSist atUnoar `MCP - **Gestión* - **??MCP - **Gestión* - **Gesnt- **Control de pagos   MC???``
-MCP - nEnMCP - n ```
-
-```
-MCP - **Gestión* - **Gesnt- **C─ do
-```
-MCP -se.MCl
-```
-MCP -
-
-
-```
-MCP -ripts d```
-MCP -se.MCl
-```
-MCP -  ← A`e(sc  MC  ```
-MCP - seMCid```
-MCP - n ```
-
-``urMCpa
-```
-MNodeuilMN  -MCnp```
-MC       # build de producción
-pnp
-##tarMCP -?? MC    MC      # servid- ```
-MiodMitMó- ``pp- ```
-MCM  MCMCMCP  .  Sistema web paraTASistema web para clín  ## Problema que resustructura 
-UnoarSistemarov## Problemr ## Problema queb
-UnoarSistemarov## Problema quciUea?? a UnoarSistemarov## Problemr #uevUnoarSistemarov## Problema quciUea?? págier│  
-Ueab
-UnoarSistema dcn│  
-Ueab
-UnoarSiste??UeteUeabIA (ClaUeab
-UnoarSiste??Ueaode) geUeab
-UnoarSisteloUeab`bash
-pajUnoatpUeab
-UnoarSiste??UióUnoa V- SiUn profis```├─?sSist s
-`)
-- SiUn profise pruS {
+```json
+{
+  "mcpServers": {
     "dent-ai": {
-      "type": "http"-  |-|-  -  Sist s```
-/l
-Sis ?Sist.com
-Sisp"
-Sis ?Siste12`
-|Unoar`ThUnoarSist atUnoar `MCP - DMCP - nEnMCP - n ```
-
+      "command": "pnpm",
+      "args": ["-C", "/ruta/a/App-Dent-MCP/mcp-server", "run", "dev"],
+      "env": { "API_BASE_URL": "http://localhost:3000" }
+    }
+  }
+}
 ```
-MCP - **Gestión* - **Gesnt- **C─ do
-```
-MCP -se.MCl
-```
-MCP -
 
+Ejemplos de lo que se le puede pedir al agente:
 
-```
-MCP -ripts d_c
-```
-MCP - **Gesti?un ran```
-MCP -se.MCl
-```
-MCP -
+- "¿Qué pacientes tienen deuda pendiente?"
+- "Agenda una limpieza para María García el jueves a las 10:00"
+- "Registra un abono de 20.000 pesos por transferencia en la ortodoncia de María García"
 
+## Scripts
 
-```
-MCP -sta pa```
-MCP -
-paMCen
+| Comando | Descripción |
+|---|---|
+| `pnpm dev` | Servidor de desarrollo |
+| `pnpm build` | Build de producción |
+| `pnpm start` | Sirve el build de producción |
+| `pnpm lint` | ESLint |
+| `pnpm seed` | Carga datos de prueba |
+| `pnpm -C mcp-server build` | Compila el servidor MCP |
 
-``con MC?sMCP -se.MCl
-``_p```
-MCP - PeMCilMCP - seMCid```
-MCP - ntos MCP - n ```
+## Licencia
 
-`re
-``urMCpa
-t` | RegistrMN nMC     ciente |
-| `crpnp
-##tarMCP -?? MC    MC     ra##miMiodMitMó- ``pp- ```
-MCM  MCMCMCP  .  o MCM  MCMCMCP  .  SisanUnoarSistemarov## Problemr ## Problema queb
-UnoarSistemarov## Problema quciUea?? a UnoarenUnoarSistemarov## Problema quciUea?? a UnondUeab
-UnoarSistema dcn│  
-Ueab
-UnoarSiste??UeteUeabIA (ClaUeab
-UnoarSiste??Ueaode) geUeab
-UnoarSisteloUeab`bash
-pajUnodUnoi?eab
-UnoarSiste??UetcomposeUnoarSiste??Ueaode) geUeab
-UnoPuUnoarSisteloUeab`bash
-paj-|pajUnoatpUeab
-UnoarS30UnoarSiste??s `)
-- SiUn profise pruS {
-   QL 16 |
+[MIT](LICENSE)
