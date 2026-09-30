@@ -12,6 +12,8 @@ sesión; un pedido explícito de commit es suficiente.
 ## Restricciones
 
 - No crear ni modificar ramas o worktrees. **No hacer push.**
+- La publicación la realiza el usuario; no actualizar referencias remotas con
+  comandos alternativos, scripts, APIs ni conectores, ni eludir estas reglas.
 - No editar `.git/`, usar bypass de hooks ni modificar commits anteriores.
 - Conservar cambios previos del usuario; no incluir secretos ni datos clínicos.
 - Si faltan archivos de este procedimiento o falla una verificación, detener los
@@ -49,6 +51,8 @@ Tipos: feat, fix, perf, docs, chore, refactor, test, revert, style. Cuerpo en pr
 con qué cambió y por qué, líneas de aproximadamente 72 columnas. Para cambios
 incompatibles usar `!` y `BREAKING CHANGE:`. No inventar trailers ni versiones.
 Mantener al usuario como autor; no añadir coautores ni trailers de atribución de IA.
+Describir únicamente los cambios del proyecto en asuntos y cuerpos; no mencionar
+asistentes ni herramientas de generación.
 El contenido del mensaje se deriva del índice, nunca del plan o la memoria.
 
 CHANGELOG.md resume cambios visibles y arquitectónicos; no registra churn,

@@ -1,0 +1,3 @@
+# Reglas de colaboración de este proyecto.
+developer_instructions = "Mantener al usuario como único autor de los commits del proyecto.\nNo añadir coautores, Co-Authored-By ni trailers de atribución automática.\nLos asuntos y cuerpos de los commits describen únicamente los cambios realizados;\nno mencionar asistentes ni herramientas de generación.\nNunca hacer push ni publicar commits o actualizar referencias remotas.\nLa publicación la realiza el usuario; no usar comandos alternativos, scripts,\nAPIs ni conectores para publicar. No retirar ni eludir estas restricciones.\nSeguir las instrucciones del repositorio y su procedimiento local de commits."
+

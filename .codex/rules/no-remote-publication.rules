@@ -1,0 +1,16 @@
+# La publicación de commits la realiza el usuario.
+prefix_rule(
+    pattern = [["git", "/usr/bin/git", "/opt/homebrew/bin/git"], ["push", "send-pack"]],
+    decision = "forbidden",
+    justification = "La publicación de commits la realiza el usuario.",
+)
+prefix_rule(
+    pattern = [["git", "/usr/bin/git", "/opt/homebrew/bin/git"], "-C", ".", ["push", "send-pack"]],
+    decision = "forbidden",
+    justification = "La publicación de commits la realiza el usuario.",
+)
+prefix_rule(
+    pattern = [["git", "/usr/bin/git", "/opt/homebrew/bin/git"], "-C", "/Users/ro_0/Desktop/portafolio/App-Dent-MCP", ["push", "send-pack"]],
+    decision = "forbidden",
+    justification = "La publicación de commits la realiza el usuario.",
+)

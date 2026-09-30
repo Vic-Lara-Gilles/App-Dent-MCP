@@ -72,4 +72,9 @@ los datos de demostración: ejecutarlo únicamente en una base desechable.
   Leer `.claude/agents/committer.md` y cargar su procedimiento antes de preparar
   el índice. No inventar un procedimiento si falta.
 - Mantener al usuario como autor; no añadir coautores ni trailers de atribución de IA.
+- Los asuntos y cuerpos de los commits describen únicamente los cambios del
+  proyecto; no mencionar asistentes ni herramientas de generación.
 - **No hacer push en este proyecto.** No crear ramas ni worktrees para commits.
+- La publicación de commits la realiza el usuario. No actualizar referencias
+  remotas mediante comandos alternativos, scripts, APIs ni conectores.
+- No retirar ni eludir las restricciones de publicación o autoría del proyecto.
