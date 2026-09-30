@@ -1,8 +1,9 @@
 packages:
   - mcp-server
 
-ignoredBuiltDependencies:
-  - '@prisma/engines'
-  - prisma
-  - sharp
-  - unrs-resolver
+allowBuilds:
+  '@prisma/engines': true
+  esbuild: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true

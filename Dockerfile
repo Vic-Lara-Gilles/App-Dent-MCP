@@ -1,16 +1,18 @@
 # --- Base ---
-FROM node:20-alpine AS base
-RUN corepack enable && corepack prepare pnpm@latest --activate
+FROM node:24-alpine AS base
+RUN corepack enable && corepack prepare pnpm@12.8.1 --activate
 WORKDIR /app
 
 # --- Dependencies ---
 FROM base AS deps
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --frozen-lockfile || pnpm install
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY mcp-server/package.json ./mcp-server/package.json
+RUN pnpm install --frozen-lockfile
 
 # --- Development ---
 FROM base AS dev
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/mcp-server/node_modules ./mcp-server/node_modules
 COPY . .
 RUN pnpm prisma generate
 EXPOSE 3000
@@ -19,6 +21,7 @@ CMD ["pnpm", "dev"]
 # --- Build ---
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/mcp-server/node_modules ./mcp-server/node_modules
 COPY . .
 RUN pnpm prisma generate
 RUN pnpm build

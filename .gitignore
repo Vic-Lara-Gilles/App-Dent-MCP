@@ -42,3 +42,8 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+
+!.env.example
+/storage/
+/public/uploads/
+/mcp-server/dist/

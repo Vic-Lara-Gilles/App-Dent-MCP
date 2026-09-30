@@ -30,11 +30,15 @@ services:
         condition: service_healthy
     env_file: .env
     environment:
+      UPLOADS_DIR: /app/storage/patients
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     volumes:
       - .:/app
       - /app/node_modules
       - /app/.next
+      - /app/mcp-server/node_modules
+      - uploads:/app/storage
 
 volumes:
   pgdata:
+  uploads:

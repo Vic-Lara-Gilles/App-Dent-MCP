@@ -5,3 +5,11 @@ node_modules
 .env*
 !.env.example
 pgdata
+
+**/node_modules
+mcp-server/dist
+storage
+public/uploads
+
+.claude
+.codex
