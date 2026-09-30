@@ -1,4 +1,8 @@
 {
+  "inputs": [
+    { "id": "mcpEmail", "type": "promptString", "description": "Email de la cuenta DentAI" },
+    { "id": "mcpPassword", "type": "promptString", "description": "Contraseña de DentAI", "password": true }
+  ],
   "servers": {
     "dent-ai": {
       "type": "stdio",
@@ -10,7 +14,9 @@
         "dev"
       ],
       "env": {
-        "API_BASE_URL": "http://localhost:3000"
+        "API_BASE_URL": "http://localhost:3000",
+        "MCP_EMAIL": "${input:mcpEmail}",
+        "MCP_PASSWORD": "${input:mcpPassword}"
       }
     }
   }

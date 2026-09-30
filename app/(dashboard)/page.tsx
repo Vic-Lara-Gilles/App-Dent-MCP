@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSession } from "@/lib/auth/session";
+import { requireSession } from "@/lib/auth/session";
 import { PAYMENT_METHOD_LABEL } from "@/lib/constants";
 import { dashboardService } from "@/lib/services/dashboard.service";
 import { AlertTriangle, Calendar, CreditCard, Users } from "lucide-react";
@@ -8,8 +8,7 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const session = await getSession();
-  const dentistId = session?.dentistId || null;
+  const session = await requireSession();
 
   const {
     patientCount,
@@ -19,7 +18,7 @@ export default async function DashboardPage() {
     debtors,
     totalOutstanding,
     recentPayments,
-  } = await dashboardService.getStats(dentistId);
+  } = await dashboardService.getStats(session);
 
   const stats = [
     {

@@ -32,3 +32,7 @@ export class ValidationError extends AppError {
     this.name = "ValidationError";
   }
 }
+
+export class ForbiddenError extends AppError {
+  constructor() { super("Sin permisos", 403); }
+}

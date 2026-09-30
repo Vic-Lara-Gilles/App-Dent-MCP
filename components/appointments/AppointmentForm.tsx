@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/components/providers/AuthProvider";
 import { DentistSelect } from "@/components/dentists/DentistSelect";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export function AppointmentForm({ patientId, defaultDate, onSuccess }: Props) {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dentistId, setDentistId] = useState<string | undefined>();
@@ -34,32 +36,34 @@ export function AppointmentForm({ patientId, defaultDate, onSuccess }: Props) {
 
     const formData = new FormData(e.currentTarget);
 
-    const res = await fetch("/api/appointments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: formData.get("title") as string,
-        description: (formData.get("description") as string) || undefined,
-        date: formData.get("date") as string,
-        duration: Number(formData.get("duration")),
-        patientId,
-        dentistId,
-      }),
-    });
+    const formElement = e.currentTarget;
+    try {
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.get("title") as string,
+          description: (formData.get("description") as string) || undefined,
+          date: new Date(formData.get("date") as string).toISOString(),
+          duration: Number(formData.get("duration")),
+          patientId,
+          dentistId: user?.role === "ADMIN" ? dentistId : undefined,
+        }),
+      });
 
-    setLoading(false);
+      if (!res.ok) {
+        const err = await res.json();
+        toast.error(err.error || "Error al crear cita");
+        return;
+      }
 
-    if (!res.ok) {
-      const err = await res.json();
-      toast.error(err.error || "Error al crear cita");
-      return;
-    }
-
-    toast.success("Cita agendada");
-    setOpen(false);
-    setDentistId(undefined);
-    (e.target as HTMLFormElement).reset();
-    onSuccess();
+      toast.success("Cita agendada");
+      setOpen(false);
+      setDentistId(undefined);
+      formElement.reset();
+      onSuccess();
+    } catch { toast.error("Error de conexión. Intenta nuevamente."); }
+    finally { setLoading(false); }
   }
 
   // Default datetime: next whole hour
@@ -68,7 +72,8 @@ export function AppointmentForm({ patientId, defaultDate, onSuccess }: Props) {
     if (!defaultDate) {
       d.setHours(d.getHours() + 1, 0, 0, 0);
     }
-    return d.toISOString().slice(0, 16);
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60_000);
+    return local.toISOString().slice(0, 16);
   };
 
   return (
@@ -117,10 +122,10 @@ export function AppointmentForm({ patientId, defaultDate, onSuccess }: Props) {
             <Label htmlFor="description">Notas (opcional)</Label>
             <Textarea id="description" name="description" rows={2} />
           </div>
-          <div className="space-y-2">
+          {user?.role === "ADMIN" && <div className="space-y-2">
             <Label>Dentista</Label>
             <DentistSelect value={dentistId} onValueChange={setDentistId} />
-          </div>
+          </div>}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancelar

@@ -1,15 +1,19 @@
+import type { AuthContext } from "@/lib/auth/middleware";
+import { dentistScope, requireAdmin, assertOwned } from "@/lib/auth/access";
 import { ConflictError, NotFoundError, ValidationError } from "@/lib/errors";
 import { dentistRepository } from "@/lib/repositories/dentist.repository";
-import { createDentistSchema, updateDentistSchema } from "@/lib/schemas";
+import { createDentistSchema, updateDentistSchema, paginationSchema } from "@/lib/schemas";
 
 
 export const dentistService = {
-  async list(params: { search?: string; page?: number; limit?: number }) {
-    const page = Math.max(1, params.page || 1);
-    const limit = Math.min(50, Math.max(1, params.limit || 20));
+  async list(params: { search?: string; page?: number; limit?: number }, auth: AuthContext) {
+    const dentistId = dentistScope(auth);
+    const pagination = paginationSchema.safeParse(params);
+    if (!pagination.success) throw new ValidationError(pagination.error.issues);
+    const { page, limit } = pagination.data;
     const skip = (page - 1) * limit;
 
-    const where = params.search
+    const searchWhere = params.search
       ? {
         OR: [
           { firstName: { contains: params.search, mode: "insensitive" as const } },
@@ -19,6 +23,7 @@ export const dentistService = {
       }
       : undefined;
 
+    const where = { ...searchWhere, ...(dentistId && { id: dentistId }) };
     const [data, total] = await Promise.all([
       dentistRepository.findMany({ where, skip, take: limit }),
       dentistRepository.count(where),
@@ -27,13 +32,15 @@ export const dentistService = {
     return { data, total, page, limit };
   },
 
-  async getById(id: string) {
+  async getById(id: string, auth: AuthContext) {
+    assertOwned(auth, id, "Dentista");
     const dentist = await dentistRepository.findById(id);
     if (!dentist) throw new NotFoundError("Dentista");
     return dentist;
   },
 
-  async create(input: unknown) {
+  async create(input: unknown, auth: AuthContext) {
+    requireAdmin(auth);
     const parsed = createDentistSchema.safeParse(input);
     if (!parsed.success) throw new ValidationError(parsed.error.issues);
 
@@ -45,7 +52,8 @@ export const dentistService = {
     return dentistRepository.create(parsed.data);
   },
 
-  async update(id: string, input: unknown) {
+  async update(id: string, input: unknown, auth: AuthContext) {
+    requireAdmin(auth);
     const parsed = updateDentistSchema.safeParse(input);
     if (!parsed.success) throw new ValidationError(parsed.error.issues);
 
@@ -55,7 +63,8 @@ export const dentistService = {
     return dentistRepository.update(id, parsed.data);
   },
 
-  async delete(id: string) {
+  async delete(id: string, auth: AuthContext) {
+    requireAdmin(auth);
     const dentist = await dentistRepository.findById(id);
     if (!dentist) throw new NotFoundError("Dentista");
     await dentistRepository.delete(id);

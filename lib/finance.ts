@@ -1,20 +1,21 @@
-/**
- * Calculate remaining balance for a single treatment.
- * Shared across patient and treatment services (DRY).
- */
-export function calcBalance(treatment: {
-  totalAmount: unknown;
-  payments: { amount: unknown }[];
-}): number {
-  const paid = treatment.payments.reduce((s, p) => s + Number(p.amount), 0);
-  return Math.max(0, Number(treatment.totalAmount) - paid);
-}
+import { Decimal } from "@prisma/client/runtime/client";
 
-/**
- * Calculate total debt across multiple treatments.
- */
-export function calcDebt(
-  treatments: { totalAmount: unknown; payments: { amount: unknown }[] }[]
-): number {
-  return treatments.reduce((sum, t) => sum + calcBalance(t), 0);
+type Money = unknown;
+export function decimal(value: Money): Decimal {
+  if (value === null || value === undefined) throw new TypeError("Monto requerido");
+  return new Decimal(String(value));
+}
+export function sumMoney(values: Money[]): number {
+  return values.reduce<Decimal>((sum, value) => sum.plus(decimal(value)), new Decimal(0)).toNumber();
+}
+export function balanceDecimal(treatment: { totalAmount: Money; payments: { amount: Money }[] }): Decimal {
+  return Decimal.max(0, decimal(treatment.totalAmount).minus(
+    treatment.payments.reduce((sum, payment) => sum.plus(decimal(payment.amount)), new Decimal(0)),
+  ));
+}
+export function calcBalance(treatment: { totalAmount: Money; payments: { amount: Money }[] }): number {
+  return balanceDecimal(treatment).toNumber();
+}
+export function calcDebt(treatments: { totalAmount: Money; payments: { amount: Money }[] }[]): number {
+  return sumMoney(treatments.map(balanceDecimal));
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { WhatsAppButton } from "@/components/whatsapp/WhatsAppButton";
@@ -27,7 +28,7 @@ export function PatientList({ patients }: { patients: PatientListItem[] }) {
                 className="flex items-center gap-3 group min-w-0"
               >
                 {p.avatarUrl ? (
-                  <img
+                  <Image unoptimized width={128} height={128}
                     src={p.avatarUrl}
                     alt={`${p.firstName} ${p.lastName}`}
                     className="h-16 w-16 rounded-xl object-cover border border-border shrink-0"

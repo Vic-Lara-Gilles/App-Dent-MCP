@@ -1,3 +1,4 @@
+import { ConflictError } from "@/lib/errors";
 import type { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/db";
 
@@ -34,6 +35,11 @@ export const dentistRepository = {
   },
 
   async delete(id: string) {
-    return prisma.dentist.delete({ where: { id } });
+    return prisma.$transaction(async tx => {
+      if (await tx.user.count({ where: { dentistId: id } }) || await tx.treatment.count({ where: { dentistId: id } }) || await tx.appointment.count({ where: { dentistId: id } })) {
+        throw new ConflictError("No se puede eliminar un dentista con cuenta, citas o tratamientos registrados");
+      }
+      return tx.dentist.delete({ where: { id } });
+    });
   },
 };

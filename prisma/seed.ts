@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+if (existsSync(".env")) process.loadEnvFile(".env");
 import { PrismaPg } from "@prisma/adapter-pg";
 import { hash } from "bcryptjs";
 import { PrismaClient } from "../app/generated/prisma/client";
@@ -446,6 +448,14 @@ async function main() {
     }),
   ]);
   console.log("📅 10 citas creadas (hoy, mañana, próximos días, pasadas)");
+
+  const [linkedTreatments, linkedAppointments] = await Promise.all([
+    prisma.treatment.findMany({ where: { dentistId: { not: null } }, select: { patientId: true, dentistId: true } }),
+    prisma.appointment.findMany({ where: { dentistId: { not: null } }, select: { patientId: true, dentistId: true } }),
+  ]);
+  await prisma.patientDentist.createMany({
+    data: [...linkedTreatments, ...linkedAppointments].map(row => ({ patientId: row.patientId, dentistId: row.dentistId! })), skipDuplicates: true,
+  });
 
   // ─── Resumen ──────────────────────────────────────────
   const totals = await Promise.all([

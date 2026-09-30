@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/components/providers/AuthProvider";
 import { DentistForm } from "@/components/dentists/DentistForm";
 import { DentistList } from "@/components/dentists/DentistList";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { useDentists } from "@/hooks/use-dentists";
 import { Search } from "lucide-react";
 
 export default function DentistsPage() {
+  const { user } = useAuth();
   const { dentists, search, setSearch, total, loading, refetch } = useDentists();
 
   return (
@@ -19,7 +21,7 @@ export default function DentistsPage() {
             {total !== 1 ? "s" : ""}
           </p>
         </div>
-        <DentistForm onSuccess={refetch} />
+        {user?.role === "ADMIN" && <DentistForm onSuccess={refetch} />}
       </div>
 
       <div className="relative">

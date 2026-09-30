@@ -51,6 +51,7 @@ export function registerAppointmentTools(server: McpServer): void {
     "Agenda una nueva cita para un paciente con fecha, hora y duración.",
     {
       patientId: z.string().describe("ID del paciente"),
+      dentistId: z.string().optional().describe("Dentista asignado (solo ADMIN; DENTIST usa su propio perfil)"),
       title: z
         .string()
         .min(1)

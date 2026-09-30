@@ -56,30 +56,35 @@ export function PaymentForm({ treatmentId, balance, onSuccess }: Props) {
       return;
     }
 
-    const res = await fetch("/api/payments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount,
-        method,
-        note: (formData.get("note") as string) || undefined,
-        treatmentId,
-      }),
-    });
+    const formElement = e.currentTarget;
+    try {
+      const res = await fetch("/api/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount,
+          method,
+          note: (formData.get("note") as string) || undefined,
+          treatmentId,
+        }),
+      });
 
-    setLoading(false);
+      if (!res.ok) {
+        const err = await res.json();
+        toast.error(err.error || "Error al registrar abono");
+        return;
+      }
 
-    if (!res.ok) {
-      const err = await res.json();
-      toast.error(err.error || "Error al registrar abono");
-      return;
+      toast.success("Abono registrado");
+      setOpen(false);
+      formElement.reset();
+      setMethod("CASH");
+      onSuccess();
+    } catch {
+      toast.error("Error de conexión. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Abono registrado");
-    setOpen(false);
-    (e.target as HTMLFormElement).reset();
-    setMethod("CASH");
-    onSuccess();
   }
 
   return (

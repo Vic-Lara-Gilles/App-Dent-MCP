@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -129,7 +130,7 @@ export function PatientPhotos({ patientId, photos, onSuccess }: PatientPhotosPro
                     </a>
                   ) : (
                     <a href={photo.url} target="_blank" rel="noopener noreferrer">
-                      <img
+                      <Image unoptimized width={128} height={128}
                         src={photo.url}
                         alt={photo.label ?? "Imagen del paciente"}
                         className="w-full h-full object-cover hover:opacity-90 transition-opacity"

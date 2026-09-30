@@ -27,6 +27,7 @@ export function registerTreatmentTools(server: McpServer): void {
     "Crea un nuevo tratamiento (bono de deuda) para un paciente con su monto total.",
     {
       patientId: z.string().describe("ID del paciente"),
+      dentistId: z.string().optional().describe("Dentista asignado (solo ADMIN; DENTIST usa su propio perfil)"),
       description: z
         .string()
         .min(1)

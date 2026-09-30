@@ -1,4 +1,14 @@
 import { z } from "zod/v4";
+import { decimal } from "./finance";
+
+export const moneySchema = z.coerce.number().positive("El monto debe ser mayor a 0")
+  .max(99999999.99, "Monto fuera de rango")
+  .refine(value => decimal(value).decimalPlaces() <= 2, "Usa como máximo dos decimales");
+export const patientDentistsSchema = z.object({ dentistIds: z.array(z.string().min(1)).max(100) });
+export const paginationSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+});
 
 // ─── Patient ─────────────────────────────────────────
 
@@ -19,21 +29,21 @@ export const updatePatientSchema = createPatientSchema.partial().extend({
 
 export const createTreatmentSchema = z.object({
   description: z.string().min(1, "Descripción requerida"),
-  totalAmount: z.coerce.number().positive("El monto debe ser mayor a 0"),
+  totalAmount: moneySchema,
   patientId: z.string().min(1),
   dentistId: z.string().optional(),
 });
 
 export const updateTreatmentSchema = z.object({
   description: z.string().min(1).optional(),
-  totalAmount: z.coerce.number().positive().optional(),
+  totalAmount: moneySchema.optional(),
   status: z.enum(["IN_PROGRESS", "COMPLETED", "CANCELLED"]).optional(),
 });
 
 // ─── Payment ─────────────────────────────────────────
 
 export const createPaymentSchema = z.object({
-  amount: z.coerce.number().positive("El monto debe ser mayor a 0"),
+  amount: moneySchema,
   method: z.enum(["CASH", "TRANSFER", "CARD", "OTHER"]).default("CASH"),
   note: z.string().optional(),
   treatmentId: z.string().min(1),
@@ -72,3 +82,13 @@ export const createDentistSchema = z.object({
 });
 
 export const updateDentistSchema = createDentistSchema.partial();
+
+export const treatmentSearchSchema = paginationSchema.extend({
+  patientId: z.string().min(1).optional(),
+  status: z.enum(["IN_PROGRESS", "COMPLETED", "CANCELLED"]).optional(),
+});
+export const appointmentSearchSchema = paginationSchema.extend({
+  patientId: z.string().min(1).optional(),
+  status: z.enum(["SCHEDULED", "CONFIRMED", "CANCELLED", "COMPLETED", "NO_SHOW"]).optional(),
+  dateFrom: z.date().optional(), dateTo: z.date().optional(),
+}).refine(params => !params.dateFrom || !params.dateTo || params.dateFrom <= params.dateTo, "Rango de fechas inválido");

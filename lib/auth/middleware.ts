@@ -1,6 +1,7 @@
 import type { UserRole } from "@/app/generated/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import type { JWTPayload } from "./jwt";
+import { dentistScope } from "./access";
 import { getSession } from "./session";
 
 export interface AuthContext {
@@ -20,6 +21,10 @@ export function withAuth(handler: AuthHandler, allowedRoles?: UserRole[]) {
 
     if (!session) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
+    try { dentistScope(session); } catch {
+      return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
     }
 
     if (allowedRoles && !allowedRoles.includes(session.role)) {

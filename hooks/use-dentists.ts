@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 
 export interface DentistListItem {
@@ -30,12 +31,18 @@ export function useDentists() {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
 
-    const res = await fetch(`/api/dentists?${params.toString()}`);
-    const data: PaginatedResult = await res.json();
+    try {
+      const res = await fetch(`/api/dentists?${params.toString()}`);
+      if (!res.ok) throw new Error("No se pudo cargar el listado");
+      const data: PaginatedResult = await res.json();
 
-    setDentists(data.data || []);
-    setTotal(data.total || 0);
-    setLoading(false);
+      setDentists(data.data || []);
+      setTotal(data.total || 0);
+    } catch {
+      toast.error("Error al cargar el listado");
+    } finally {
+      setLoading(false);
+    }
   }, [search]);
 
   useEffect(() => {

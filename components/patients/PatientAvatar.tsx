@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Camera, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -65,7 +66,7 @@ export function PatientAvatar({
       title="Cambiar foto de perfil"
     >
       {avatarUrl ? (
-        <img
+        <Image unoptimized width={128} height={128}
           src={avatarUrl}
           alt={`${firstName} ${lastName}`}
           className="w-full h-full rounded-full object-cover border-2 border-border"

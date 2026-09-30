@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { dentistScope } from "./access";
 import { cookies } from "next/headers";
 import type { JWTPayload } from "./jwt";
 import { signToken, verifyToken } from "./jwt";
@@ -26,4 +28,11 @@ export async function getSession(): Promise<JWTPayload | null> {
 export async function destroySession(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
+}
+
+export async function requireSession(): Promise<JWTPayload> {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  dentistScope(session);
+  return session;
 }

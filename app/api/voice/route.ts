@@ -11,7 +11,7 @@ import { z } from "zod/v4";
 
 export const dynamic = "force-dynamic";
 
-export const POST = withAuth(async (req) => {
+export const POST = withAuth(async (req, auth) => {
   try {
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
@@ -42,7 +42,7 @@ Si el usuario pide algo que no puedes hacer con las herramientas, explícalo bre
             search: z.string().optional().describe("Nombre o teléfono a buscar"),
           }),
           execute: async ({ search }) => {
-            const result = await patientService.list({ search, limit: 5 });
+            const result = await patientService.list({ search, limit: 5 }, auth);
             return result;
           },
         }),
@@ -53,7 +53,7 @@ Si el usuario pide algo que no puedes hacer con las herramientas, explícalo bre
             id: z.string().describe("ID del paciente"),
           }),
           execute: async ({ id }) => {
-            return await patientService.getById(id);
+            return await patientService.getById(id, auth);
           },
         }),
 
@@ -63,7 +63,7 @@ Si el usuario pide algo que no puedes hacer con las herramientas, explícalo bre
             search: z.string().optional(),
           }),
           execute: async ({ search }) => {
-            return await dentistService.list({ search, limit: 10 });
+            return await dentistService.list({ search, limit: 10 }, auth);
           },
         }),
 
@@ -78,7 +78,7 @@ Si el usuario pide algo que no puedes hacer con las herramientas, explícalo bre
               dateFrom: new Date(day + "T00:00:00"),
               dateTo: new Date(day + "T23:59:59"),
               limit: 20,
-            });
+            }, auth);
           },
         }),
 
@@ -87,8 +87,8 @@ Si el usuario pide algo que no puedes hacer con las herramientas, explícalo bre
           inputSchema: z.object({}),
           execute: async () => {
             const [patients, treatments] = await Promise.all([
-              patientService.list({ limit: 1 }),
-              treatmentService.list({ limit: 1 }),
+              patientService.list({ limit: 1 }, auth),
+              treatmentService.list({ limit: 1 }, auth),
             ]);
             return {
               totalPacientes: patients.total,

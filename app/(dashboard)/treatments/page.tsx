@@ -1,50 +1,17 @@
 import { AddPaymentDialog } from "@/components/treatments/AddPaymentDialog";
+import Image from "next/image";
 import { PaymentDonut } from "@/components/treatments/PaymentDonut";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { calcBalance } from "@/lib/finance";
-import { treatmentRepository } from "@/lib/repositories/treatment.repository";
+import { requireSession } from "@/lib/auth/session";
+import { treatmentService } from "@/lib/services/treatment.service";
 import { CreditCard } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function TreatmentsPage() {
-  const treatments = await treatmentRepository.findMany({});
-
-  // Group treatments by patient
-  const byPatient = new Map<
-    string,
-    {
-      patient: (typeof treatments)[0]["patient"];
-      treatments: typeof treatments;
-      totalAmount: number;
-      totalPaid: number;
-      balance: number;
-    }
-  >();
-
-  for (const t of treatments) {
-    const pid = t.patient.id;
-    const paid = t.payments.reduce((s, p) => s + Number(p.amount), 0);
-    const existing = byPatient.get(pid);
-    if (existing) {
-      existing.treatments.push(t);
-      existing.totalAmount += Number(t.totalAmount);
-      existing.totalPaid += paid;
-      existing.balance = Math.max(0, existing.totalAmount - existing.totalPaid);
-    } else {
-      const total = Number(t.totalAmount);
-      byPatient.set(pid, {
-        patient: t.patient,
-        treatments: [t],
-        totalAmount: total,
-        totalPaid: paid,
-        balance: Math.max(0, total - paid),
-      });
-    }
-  }
-
-  const patients = [...byPatient.values()];
+  const patients = await treatmentService.getOverview(await requireSession());
 
   // Find the first treatment with balance for AddPaymentDialog
   function firstWithBalance(group: (typeof patients)[0]) {
@@ -113,7 +80,7 @@ export default async function TreatmentsPage() {
                       className="flex items-center gap-3 group min-w-0"
                     >
                       {g.patient.avatarUrl ? (
-                        <img
+                        <Image unoptimized width={128} height={128}
                           src={g.patient.avatarUrl}
                           alt={`${g.patient.firstName} ${g.patient.lastName}`}
                           className="h-16 w-16 rounded-xl object-cover border border-border shrink-0"

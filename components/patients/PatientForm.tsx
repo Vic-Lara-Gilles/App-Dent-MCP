@@ -56,24 +56,28 @@ export function PatientForm({
     const url = isEdit ? `/api/patients/${patient.id}` : "/api/patients";
     const method = isEdit ? "PATCH" : "POST";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    setLoading(false);
+      if (!res.ok) {
+        const err = await res.json();
+        toast.error(err.error || "Error al guardar");
+        return;
+      }
 
-    if (!res.ok) {
-      const err = await res.json();
-      toast.error(err.error || "Error al guardar");
-      return;
+      toast.success(isEdit ? "Paciente actualizado" : "Paciente registrado");
+      setOpen(false);
+      onSuccess?.();
+      router.refresh();
+    } catch {
+      toast.error("Error de conexión. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success(isEdit ? "Paciente actualizado" : "Paciente registrado");
-    setOpen(false);
-    onSuccess?.();
-    router.refresh();
   }
 
   return (

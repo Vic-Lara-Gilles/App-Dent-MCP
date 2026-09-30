@@ -34,7 +34,7 @@ export function usePatientDetail(id: string) {
       })
       .catch(() => {
         if (!cancelled) toast.error("Error al cargar paciente");
-      });
+      }).finally(() => { if (!cancelled) setLoading(false); });
 
     return () => {
       cancelled = true;
@@ -45,13 +45,16 @@ export function usePatientDetail(id: string) {
 
   const deletePatient = useCallback(async () => {
     if (!confirm("¿Eliminar este paciente y todos sus datos?")) return;
-    const res = await fetch(`/api/patients/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      toast.success("Paciente eliminado");
-      router.push("/patients");
-    } else {
-      toast.error("Error al eliminar");
-    }
+    try {
+      const res = await fetch(`/api/patients/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        toast.success("Paciente eliminado");
+        router.push("/patients");
+      } else {
+        const body = await res.json();
+        toast.error(body.error || "Error al eliminar");
+      }
+    } catch { toast.error("Error de conexión al eliminar"); }
   }, [id, router]);
 
   return { patient, loading, refetch, deletePatient };

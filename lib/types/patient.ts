@@ -52,6 +52,7 @@ export interface AppointmentDetail {
 }
 
 export interface PatientDetail extends PatientBase {
+  dentists: { dentistId: string }[];
   totalDebt: number;
   treatments: TreatmentDetail[];
   appointments: AppointmentDetail[];

@@ -12,20 +12,34 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: dentai_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d dentai_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
     env:
-      # Placeholders: the build does not connect to the database.
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dentai
+      # Dedicated CI database, never clinic data.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dentai_test
       JWT_SECRET: ci-only-secret
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dentai_test
+      TEST_API_BASE_URL: http://localhost:3180
+      UPLOADS_DIR: /tmp/dentai-ci-uploads
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 12.8.1
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
@@ -34,11 +48,30 @@ jobs:
       - name: Generate Prisma client
         run: pnpm prisma generate
 
+      - name: Apply migrations
+        run: pnpm prisma migrate deploy
+
       - name: Lint
-        run: pnpm lint
+        run: pnpm exec eslint --max-warnings=0
+
+      - name: Types and unit tests
+        run: |
+          pnpm typecheck
+          pnpm test
 
       - name: Build app
         run: pnpm build
 
       - name: Build MCP server
         run: pnpm -C mcp-server build
+
+      - name: Integration tests with the production server
+        run: |
+          HOSTNAME=127.0.0.1 PORT=3180 node .next/standalone/server.js > /tmp/dentai-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:3180/login > /dev/null; then break; fi
+            sleep 1
+          done
+          pnpm test:integration

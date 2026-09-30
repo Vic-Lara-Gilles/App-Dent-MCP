@@ -38,6 +38,7 @@ model Patient {
   email        String?
   notes        String?
   avatarUrl    String?
+  dentists     PatientDentist[]
   photos       PatientPhoto[]
   treatments   Treatment[]
   appointments Appointment[]
@@ -63,6 +64,7 @@ model Dentist {
   phone        String        @unique
   email        String?
   specialty    String?
+  patients     PatientDentist[]
   user         User?
   treatments   Treatment[]
   appointments Appointment[]
@@ -142,4 +144,14 @@ enum AppointmentStatus {
 enum UserRole {
   ADMIN
   DENTIST
+}
+
+model PatientDentist {
+  patientId String
+  dentistId String
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  dentist Dentist @relation(fields: [dentistId], references: [id], onDelete: Cascade)
+
+  @@id([patientId, dentistId])
+  @@index([dentistId])
 }

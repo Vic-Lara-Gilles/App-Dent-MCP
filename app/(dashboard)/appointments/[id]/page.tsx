@@ -6,6 +6,8 @@ import { APPOINTMENT_STATUS_LABEL, APPOINTMENT_STATUS_VARIANT } from "@/lib/cons
 import { appointmentService } from "@/lib/services/appointment.service";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import Link from "next/link";
+import { requireSession } from "@/lib/auth/session";
+import { NotFoundError } from "@/lib/errors";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -15,13 +17,15 @@ export default async function AppointmentDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const auth = await requireSession();
   const { id } = await params;
 
   let appt;
   try {
-    appt = await appointmentService.getById(id);
-  } catch {
-    notFound();
+    appt = await appointmentService.getById(id, auth);
+  } catch (error) {
+    if (error instanceof NotFoundError) notFound();
+    throw error;
   }
 
   const apptDate = new Date(appt.date);

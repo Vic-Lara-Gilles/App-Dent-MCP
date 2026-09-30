@@ -3,6 +3,8 @@
 import { AppointmentForm } from "@/components/appointments/AppointmentForm";
 import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
 import { PatientAvatar } from "@/components/patients/PatientAvatar";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { PatientDentists } from "@/components/patients/PatientDentists";
 import { PatientForm } from "@/components/patients/PatientForm";
 import { PatientPhotos } from "@/components/patients/PatientPhotos";
 import { PaymentForm } from "@/components/treatments/PaymentForm";
@@ -18,11 +20,14 @@ import { useParams, useRouter } from "next/navigation";
 export default function PatientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { user } = useAuth();
   const { patient, loading, refetch, deletePatient } = usePatientDetail(id);
 
-  if (loading || !patient) {
+  if (loading) {
     return <div className="text-center py-12 text-muted-foreground">Cargando...</div>;
   }
+
+  if (!patient) return <p>No se pudo cargar el paciente. <button onClick={refetch}>Reintentar</button></p>;
 
   return (
     <div className="space-y-6">
@@ -58,11 +63,13 @@ export default function PatientDetailPage() {
         </div>
         <div className="flex items-center gap-2 pl-11 sm:pl-0 sm:ml-auto sm:shrink-0">
           <PatientForm patient={patient} onSuccess={refetch} />
-          <Button variant="destructive" size="sm" onClick={deletePatient}>
+          {user?.role === "ADMIN" && <Button variant="destructive" size="sm" onClick={deletePatient}>
             <Trash2 className="h-4 w-4 mr-1" /> Eliminar
-          </Button>
+          </Button>}
         </div>
       </div>
+
+      {user?.role === "ADMIN" && <PatientDentists patientId={id} linkedIds={patient.dentists.map(link => link.dentistId)} onSuccess={refetch} />}
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

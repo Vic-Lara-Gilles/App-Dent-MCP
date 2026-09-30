@@ -1,6 +1,7 @@
 "use client";
 
 import type { PaginatedResult, PatientListItem } from "@/lib/types/patient";
+import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 
 // ─── usePatients Hook ────────────────────────────────
@@ -17,12 +18,18 @@ export function usePatients() {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
 
-    const res = await fetch(`/api/patients?${params.toString()}`);
-    const data: PaginatedResult<PatientListItem> = await res.json();
+    try {
+      const res = await fetch(`/api/patients?${params.toString()}`);
+      if (!res.ok) throw new Error("No se pudo cargar el listado");
+      const data: PaginatedResult<PatientListItem> = await res.json();
 
-    setPatients(data.data || []);
-    setTotal(data.total || 0);
-    setLoading(false);
+      setPatients(data.data || []);
+      setTotal(data.total || 0);
+    } catch {
+      toast.error("Error al cargar el listado");
+    } finally {
+      setLoading(false);
+    }
   }, [search]);
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/components/providers/AuthProvider";
 import { DentistSelect } from "@/components/dentists/DentistSelect";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function TreatmentForm({ patientId, onSuccess }: Props) {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dentistId, setDentistId] = useState<string | undefined>();
@@ -31,30 +33,35 @@ export function TreatmentForm({ patientId, onSuccess }: Props) {
 
     const formData = new FormData(e.currentTarget);
 
-    const res = await fetch("/api/treatments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        description: formData.get("description") as string,
-        totalAmount: Number(formData.get("totalAmount")),
-        patientId,
-        dentistId,
-      }),
-    });
+    const formElement = e.currentTarget;
+    try {
+      const res = await fetch("/api/treatments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          description: formData.get("description") as string,
+          totalAmount: Number(formData.get("totalAmount")),
+          patientId,
+          dentistId: user?.role === "ADMIN" ? dentistId : undefined,
+        }),
+      });
 
-    setLoading(false);
+      if (!res.ok) {
+        const err = await res.json();
+        toast.error(err.error || "Error al crear tratamiento");
+        return;
+      }
 
-    if (!res.ok) {
-      const err = await res.json();
-      toast.error(err.error || "Error al crear tratamiento");
-      return;
+      toast.success("Tratamiento creado");
+      setOpen(false);
+      setDentistId(undefined);
+      formElement.reset();
+      onSuccess();
+    } catch {
+      toast.error("Error de conexión. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Tratamiento creado");
-    setOpen(false);
-    setDentistId(undefined);
-    (e.target as HTMLFormElement).reset();
-    onSuccess();
   }
 
   return (
@@ -88,10 +95,10 @@ export function TreatmentForm({ patientId, onSuccess }: Props) {
               required
             />
           </div>
-          <div className="space-y-2">
+          {user?.role === "ADMIN" && <div className="space-y-2">
             <Label>Dentista</Label>
             <DentistSelect value={dentistId} onValueChange={setDentistId} />
-          </div>
+          </div>}
           <div className="flex justify-end gap-2 pt-2">
             <Button
               type="button"

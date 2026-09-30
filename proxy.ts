@@ -9,8 +9,9 @@ function getSecret() {
   return new TextEncoder().encode(jwt);
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  if (pathname.startsWith("/uploads/")) return new NextResponse(null, { status: 404 });
 
   if (
     PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ||

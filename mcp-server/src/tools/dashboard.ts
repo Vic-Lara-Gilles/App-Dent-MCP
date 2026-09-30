@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { apiGet } from "../client.js";
 
 export function registerDashboardTools(server: McpServer): void {
@@ -8,20 +8,7 @@ export function registerDashboardTools(server: McpServer): void {
     "Resumen financiero del consultorio: pacientes con mayor deuda, tratamientos en curso y próximas citas.",
     {},
     async () => {
-      const now = new Date().toISOString();
-      const [patients, inProgressTreatments, upcomingAppointments] = await Promise.all([
-        apiGet("/api/patients", { limit: "10" }),
-        apiGet("/api/treatments", { status: "IN_PROGRESS" }),
-        apiGet("/api/appointments", { dateFrom: now, limit: "10" }),
-      ]);
-
-      const summary = {
-        retrievedAt: now,
-        patients,
-        inProgressTreatments,
-        upcomingAppointments,
-      };
-
+      const summary = await apiGet("/api/dashboard");
       return { content: [{ type: "text" as const, text: JSON.stringify(summary, null, 2) }] };
     }
   );
